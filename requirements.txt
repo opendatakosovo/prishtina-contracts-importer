@@ -1,0 +1,3 @@
+pymongo==2.6.2
+python-slugify==0.0.7
+Unidecode==0.04.1
