@@ -11,150 +11,306 @@ from utils import Utils
 client = MongoClient()
 
 # Get database and collection
-db = client.kosovoprocurements
+db = client.kosovoprocurements2
 collection = db.procurements
 utils = Utils()
-collection.remove({})
+
 
 def parse():
-
+    print "------------------------------------"
     print "Importing procurements data."
+    for filename in os.listdir('data/procurements/new'):
+        print filename
+        if(filename.endswith(".csv")):
+            with open('data/procurements/new/' + filename, 'rb') as csvfile:
+                reader = csv.reader(csvfile, delimiter=',')
+                line_number = 0
+                installments = []
+                annexes = []
+                for row in reader:
+                    year = int(filename.replace('.csv', ''))
+                    planned = convert_planned_number(row[0])
+                    budget_type = convert_buget_type(row[1])
+                    procurmentNo = convert_nr(row[2])
+                    type_of_procurement = convert_procurement_type(row[3])
+                    value_of_procurement = convert_procurement_value(row[4])
+                    procurement_procedure = convert_procurement_procedure(
+                        row[5])
+                    classification = convert_classification(row[6])
+                    activity_title_of_procurement = remove_quotes(row[7])
+                    initiationDate = convert_date(row[8], year)
+                    approvalDateOfFunds = convert_date(row[9], year)
+                    torDate = convert_date(row[10], year)
+                    publicationDate = convert_date(row[11], year)
+                    complaintsToAuthority1 = convert_complaints(row[12])
+                    complaintsToOshp1 = convert_complaints(row[13])
+                    bidOpeningDate = convert_date(row[14], year)
+                    noOfCompaniesWhoDownloadedTenderDoc = convert_nr(row[15])
+                    noOfCompaniesWhoSubmited = convert_nr(row[16])
+                    if row[17].find("-") != -1:
+                        startingAndEndingEvaluationDateArray = row[17].split(
+                            "-")
+                        startingOfEvaluationDate = convert_date(
+                            startingAndEndingEvaluationDateArray[0], year)
+                        endingOfEvaluationDate = convert_date(
+                            startingAndEndingEvaluationDateArray[1], year)
+                        startingAndEndingEvaluationDate = None
+                    else:
+                        startingOfEvaluationDate = None
+                        endingOfEvaluationDate = None
+                        startingAndEndingEvaluationDate = convert_date_range(
+                            row[17], year)
+                    noOfRefusedBids = convert_nr(row[18])
+                    reapprovalDate = convert_date(row[19], year)
+                    publicationDateOfGivenContract = convert_date(
+                        row[20], year)
+                    cancellationNoticeDate = convert_date(row[21], year)
+                    standardDocuments = convert_date(row[22], year)
+                    complaintsToAuthority2 = convert_complaints_second(row[23])
+                    complaintsToOshp2 = convert_complaints_second(row[24])
+                    predictedValue = convert_price(row[25])
+                    companyType = convert_company_type(row[26])
+                    applicationDeadlineType = convert_due_time(row[27])
+                    criteria = convert_criteria_type(row[28])
+                    retender = convert_rentender(row[29])
+                    status = convert_status(row[30])
+                    companyName = remove_quotes(row[31])
+                    signed_date = convert_date(row[32], year)
+                    if row[33].find("-") != -1:
+                        startingAndEndingEvaluationDateArray = row[33].split(
+                            '-')
+                        implementationDeadlineStartingDate = convert_date(
+                            startingAndEndingEvaluationDateArray[0], year)
+                        implementationDeadlineEndingDate = convert_date(
+                            startingAndEndingEvaluationDateArray[1], year)
+                        implementationDeadlineStartingAndEndingDate = None
+                    else:
+                        implementationDeadlineStartingDate = None
+                        implementationDeadlineEndingDate = None
+                        implementationDeadlineStartingAndEndingDate = convert_date_range(
+                            row[33], year)
+                    closingDate = convert_date_range(row[34], year)
+                    totalAmountOfContractsIncludingTaxes = convert_price(
+                        row[35])
+                    noOfPaymentInstallments = convert_nr(row[36])
+                    totalValueOfAnnexContract1 = convert_price(row[37])
+                    annexContractSigningDate1 = convert_date(row[38], year)
+                    annexes.append({
+                        "totalValueOfAnnexContract1": totalValueOfAnnexContract1,
+                        "annexContractSigningDate1": annexContractSigningDate1
+                    })
+                    totalAmountOfAllAnnexContractsIncludingTaxes = convert_price(
+                        row[39])
+                    installmentPayDate1 = convert_date(row[40], year)
+                    installmentAmount1 = convert_price(row[41])
+                    installments.append({
+                        "installmentPayDate1": installmentPayDate1,
+                        "installmentAmount1": installmentAmount1
+                    })
+                    installmentPayDate2 = convert_date(row[42], year)
+                    installmentAmount2 = convert_price(row[43])
+                    installments.append({
+                        "installmentPayDate1": installmentPayDate2,
+                        "installmentAmount1": installmentAmount2
+                    })
+                    discountAmountFromContract = convert_price(row[44])
+                    lastInstallmentPayDate = convert_date(row[45], year)
+                    lastInstallmentAmount = convert_price(row[46])
+                    totalPayedPriceForContract = convert_price(row[47])
+                    directorates = row[48]
+                    nameOfProcurementOffical = row[49]
 
-    for filename in os.listdir('data/procurements'):
-        city = filename
-        for filename in os.listdir('data/procurements/'+filename):
-            if(filename.endswith(".csv")):
-                with open('data/procurements/'+city+"/" + filename, 'rb') as csvfile:
-                    reader = csv.reader(csvfile, delimiter=',')
-                    line_number = 0
-                    for row in reader:
-                        year = int(filename.replace('.csv', ''))
-                        budget_type = convert_buget_type(row[0])
-                        nr = convert_nr(row[1])
-                        type_of_procurement = convert_procurement_type(row[2])
-                        value_of_procurement = convert_procurement_value(row[3])
-                        procurement_procedure = convert_procurement_procedure(row[4])
-                        classification = int(convert_classification(row[5]))
-                        activity_title_of_procurement = remove_quotes(row[6])
-                        signed_date = convert_date(row[7], year, city)
-                        #TODO: Convert this to Date
-                        contract_value = convert_price(row[8])
-                        contract_price = convert_price(row[9])
-                        aneks_contract_price = convert_price(row[10])
-                        company = remove_quotes(row[11])
-                        komuna_slug = slugify(city)
-                        company_address = remove_quotes(row[12])
-                        company_address_fixed = utils.fix_city_name(company_address) 
-                        company_address_slug = slugify(company_address)
-                        company_address_slug_fixed = utils.fix_city_slug(company_address_slug)
-                        tipi_operatorit = convert_company_type(row[13])
-                        afati_kohor = convert_due_time(row[14])
-                        kriteret_per_dhenje_te_kontrates = convert_criteria_type(row[15])
+                    # TODO: Convert this to Date
+                    # contract_value = convert_price(row[25])
+                    # contract_price = convert_price(row[9])
+                    # aneks_contract_price = convert_price(row[10])
+                    # company = remove_quotes(row[11])
 
-                        report = {
-                            "komuna": {
-                                "emri": city,
-                                "slug": komuna_slug
+                    # company_address = remove_quotes(row[12])
+                    # company_address_fixed = utils.fix_city_name(
+                    #     company_address)
+                    # company_address_slug = slugify(company_address)
+                    # company_address_slug_fixed = utils.fix_city_slug(
+                    #     company_address_slug)
+                    # tipi_operatorit = convert_company_type(row[13])
+                    # afati_kohor = convert_due_time(row[14])
+                    # kriteret_per_dhenje_te_kontrates = convert_criteria_type(
+                    #     row[15])
+
+                    report = {
+                        "activityTitle": activity_title_of_procurement,
+                        "procurementNo": procurmentNo,
+                        "procurementType": type_of_procurement,
+                        "procurementValue": value_of_procurement,
+                        "procurementProcedure": procurement_procedure,
+                        "fppClassification": classification,
+                        "planned": planned,
+                        "budget": budget_type,
+                        "initiationDate": initiationDate,
+                        "approvalDateOfFunds": approvalDateOfFunds,
+                        "torDate": torDate,
+                        "complaintsToAuthority1": complaintsToAuthority1,
+                        "complaintsToOshp1": complaintsToOshp1,
+                        "bidOpeningDate": bidOpeningDate,
+                        "noOfCompaniesWhoDownloadedTenderDoc": noOfCompaniesWhoDownloadedTenderDoc,
+                        "noOfCompaniesWhoSubmited": noOfCompaniesWhoSubmited,
+                        "startingOfEvaluationDate": startingOfEvaluationDate,
+                        "endingOfEvaluationDate": endingOfEvaluationDate,
+                        "startingAndEndingEvaluationDate": startingAndEndingEvaluationDate,
+                        "noOfRefusedBids": noOfRefusedBids,
+                        "reapprovalDate": reapprovalDate,
+                        "cancellationNoticeDate": cancellationNoticeDate,
+                        "complaintsToAuthority2": complaintsToAuthority2,
+                        "complaintsToOshp2": complaintsToOshp2,
+                        "retender": retender,
+                        "status": status,
+                        "signingDate": signed_date,
+                        "noOfPaymentInstallments": noOfPaymentInstallments,
+                        "directorates": directorates,
+                        "nameOfProcurementOffical": nameOfProcurementOffical,
+                        "installments": installments,
+                        "lastInstallmentPayDate":  lastInstallmentPayDate,
+                        "lastInstallmentAmount": lastInstallmentAmount,
+
+                        "year": year,
+                        "flagStatus": None,
+                        "applicationDeadlineType": applicationDeadlineType,
+                        "contract": {
+                            "predictedValue": predictedValue,
+                            "totalAmountOfAllAnnexContractsIncludingTaxes": totalAmountOfAllAnnexContractsIncludingTaxes,
+                            "totalAmountOfContractsIncludingTaxes": totalAmountOfContractsIncludingTaxes,
+                            "totalPayedPriceForContract": totalPayedPriceForContract,
+                            "annexes": annexes,
+                            "criteria": criteria,
+                            "implementationDeadlineStartingDate": implementationDeadlineStartingDate,
+                            "implementationDeadlineEndingDate": implementationDeadlineEndingDate,
+                            "implementationDeadlineStartingAndEndingDate": implementationDeadlineStartingAndEndingDate,
+                            "publicationDate": publicationDate,
+                            "publicationDateOfGivenContract": publicationDateOfGivenContract,
+                            "closingDate": closingDate,
+                            "discountAmountFromContract": discountAmountFromContract,
+                            "file": ""
+                        },
+                        "company": {
+                            "name": companyName,
+                            "slug": slugify(companyName),
+                            "headquarters": {
+                                "name": "",
+                                "slug": ""
                             },
-                            "viti": int(year),
-                            "tipiBugjetit": budget_type,
-                            "numri": nr,
-                            "tipi": type_of_procurement,
-                            "vlera": value_of_procurement,
-                            "procedura": procurement_procedure,
-                            "klasifikimiFPP": classification,
-                            "aktiviteti": activity_title_of_procurement,
-                            "dataNenshkrimit": signed_date,
-                            "kontrata": {
-                                "vlera": contract_value,
-                                "qmimi": contract_price,
-                                "qmimiAneks": aneks_contract_price,
-                                "afatiKohor": afati_kohor,
-                                "kriteret": kriteret_per_dhenje_te_kontrates
-                            },
-                            "kompania": {
-                                "emri": company,
-                                "slug": slugify(company),
-                                "selia": {
-                                    "emri": company_address_fixed,
-                                    "slug": company_address_slug_fixed
-                                },
-                                "tipi": tipi_operatorit
-                            }
+                            "type": companyType,
+                            "standardDocuments": standardDocuments
                         }
+                    }
 
-                        coordinates = utils.get_city_coordinates(company_address_slug_fixed)
-                        if company_address_slug_fixed != "" and coordinates != None:
-                            report["kompania"]["selia"]["kordinatat"] = {
-                                'gjeresi': coordinates['lat'],
-                                'gjatesi': coordinates['lon']
-                            }
+                    line_number = line_number + 1
+                    collection.insert(report)
+                    annexes = []
+                    installments = []
 
-                        line_number = line_number + 1
-                        collection.insert(report)
 
 def convert_nr(number):
     if(number is None):
         return ""
     else:
-
         newNumber = [int(s) for s in number.split() if s.isdigit()]
         if len(newNumber) > 0:
             return int(newNumber[0])
         else:
-            return ""
+            return None
 
 
 def convert_classification(number):
     if number != "":
         if number.startswith('0'):
-            return str(int(number))
+            return int(number)
         else:
-            return number
+            return int(number)
     else:
-        return 0
+        return None
 
-def convert_date(date_str, year, qyteti):
-    if date_str.startswith('nd') or date_str.startswith('a') or date_str == "":
+
+def convert_date(date_str, year):
+    if date_str != "" and date_str != " " and date_str != "n/a" and date_str != "N/A" and date_str.find("€") == -1 and date_str != ".." and date_str != "0":
+        if date_str.find(',') != -1:
+            splitedDate = date_str.split(',')
+            if len(splitedDate[0]) < 2 and len(splitedDate) > 3:
+                date_str = "0%s.%s.%s" % (
+                    splitedDate[0], splitedDate[1], splitedDate[2])
+            elif len(splitedDate[1]) < 2 and len(splitedDate) > 3:
+                date_str = "%s.0%s.%s" % (
+                    splitedDate[0], splitedDate[1], splitedDate[2])
+        elif date_str.find('.') != -1:
+            splitedDate = date_str.split('.')
+            if len(splitedDate[0]) < 2 and len(splitedDate) > 3:
+                date_str = "0%s.%s.%s" % (
+                    splitedDate[0], splitedDate[1], splitedDate[2])
+            elif len(splitedDate[1]) < 2 and len(splitedDate) > 3:
+                date_str = "%s.0%s.%s" % (
+                    splitedDate[0], splitedDate[1], splitedDate[2])
+        splitedDate2 = date_str.split('.')
+        if len(splitedDate2) == 3 and len(splitedDate2[2]) == 4:
+            date_str = "%s.%s.%s" % (
+                splitedDate2[0], splitedDate2[1], splitedDate2[2][2:4])
+        return datetime.strptime(date_str, '%d.%m.%y')
+    elif date_str == "n/a" or date_str == "N/A" or date_str == "0":
+        return None
+    else:
         today = date.today()
-        today = today.strftime(str("1.1."+str(year)))
-        return datetime.strptime(today, '%d.%m.%Y')
-    elif date_str.find(",") != -1:
-        date_str = date_str.replace(',', '.')
-        date_str = date_str[0: 10]
-        return datetime.strptime(date_str, '%d.%m.%Y')
-    elif date_str.find('/') != -1:
-        date_str = date_str.replace('/', '.')
-        date_str = date_str[0: 10]
-        return datetime.strptime(date_str, '%d.%m.%Y')
-    else:
-        date_str = date_str[0: 10]
-
-        if len(date_str[6:]) ==2:
-            day = date_str[0:2]
-            month =  date_str[3:5]
-            datet = ""
-        
-            datet = date_str[6:]
-            datet = str(20)+datet            
-            final_date = str(day) +"."+str(month)+"." + datet
-            return datetime.strptime(final_date, '%d.%m.%Y')
-        return datetime.strptime(date_str, '%d.%m.%Y')
+        year = str(year)
+        today = '1.1.'+year[2:4]
+        return datetime.strptime(today, '%d.%m.%y')
 
 
 def convert_price(num):
-    if isinstance(num, str):
-        if num.startswith('A') or num.startswith('a') or 'p' in num or num == "":
-            return 0
-        elif ',' in num:
-            return float(num.replace(',', ''))
-        elif num == 'N/A':
-            return 0
+    if num != "" and num != "#VALUE!" and num.find("-") == -1 and num != "0":
+        price = num.strip().replace("€", "").replace(" ", "")
+        if price.find('.') == (len(price)-3):
+            priceArray = price.split('.')
+            # print " %s = %s " % (priceArray, price)
+            if priceArray[0].find(','):
+                # print "[%s] . [%s] " % (
+                    # priceArray[0].replace(",", ""), priceArray[1])
+                return '{:,.0f}'.format(
+                    float(priceArray[0].replace(",", "")))+"."+priceArray[1]
+            else:
+                # print " [%s] . [%s] " % (priceArray[0], priceArray[1])
+                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
+        elif price.find(',') == (len(price)-3):
+            priceArray = price.split(',')
+            # print " %s = %s " % (priceArray, price)
+            if priceArray[0].find('.'):
+                # print " [%s] . [%s] " % (
+                    # priceArray[0].replace(".", ""), priceArray[1])
+                return '{:,.0f}'.format(
+                    float(priceArray[0].replace(".", "")))+"."+priceArray[1]
+            else:
+                #print " [%s] . [%s] " % (priceArray[0], priceArray[1])
+                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
+        elif price.find('.') == (len(price)-2):
+            priceArray = price.split('.')
+            if priceArray[0].find(",") != 1:
+                return '{:,.0f}'.format(float(priceArray[0].replace(',', "")))+"."+priceArray[1]+"0"
+            else:
+                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]+"0"
+        elif price.find(',') == (len(price)-2):
+            priceArray = price.split('.')
+            if priceArray[0].find(",") != 1:
+                return '{:,.0f}'.format(float(priceArray[0].replace(',', "")))+"."+priceArray[1]+"0"
+            else:
+                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]+"0"
+        elif num == "n/a" or num == "N/A" or num == " n/a ":
+            #print num
+            return num
+        elif num == "0":
+            return "0.00"
+        elif num.find("-") != -1:
+            return ""
         else:
-            num = num.decode('unicode_escape').encode('ascii', 'ignore')
-            return float(num)
+            print num
+            return ""
     else:
-        return float(num)
+        return ""
 
 
 def remove_quotes(name):
@@ -176,20 +332,20 @@ def convert_buget_type(number):
         if number[2:3] == '2':
             budget_array.append("Buxheti i Kosovës")
         if number[4:5] == '3':
-            budget_array.append("Donacione")
+            budget_array.append("Donacion")
         return budget_array
 
     value = number[:1]
     if value != "":
-        num = int(value)
+        num = value
         if num == 1:
             return "Të hyra vetanake"
         elif num == 2:
             return "Buxheti i Kosovës"
         elif num == 3:
-            return "Donacione"
+            return "Donacion"
     else:
-        return "n/a"
+        return ""
 
 
 def convert_procurement_type(num):
@@ -210,7 +366,7 @@ def convert_procurement_type(num):
         elif number == 7:
             return "Prone e palujtshme"
     else:
-        return "n/a"
+        return ""
 
 
 def convert_procurement_value(num):
@@ -225,7 +381,7 @@ def convert_procurement_value(num):
         elif number == 4:
             return "Vlerë minimale"
     else:
-        return "n/a"
+        return ""
 
 
 def convert_procurement_procedure(num):
@@ -246,23 +402,20 @@ def convert_procurement_procedure(num):
         elif number == 7:
             return "Procedura e vlerës minimale"
     else:
-        return "n/a"
+        return ""
 
 
 def convert_company_type(num):
-    if num != "":
-        if num == "Ferizaj":
-            return "OE Vendor"
-        elif num == 'I':
-            return "OE Vendor"
-        elif num != "Ferizaj":
-            number = int(num)
-            if number == 1:
-                return "OE Vendor"
-            elif number == 2:
-                return "OE Jo vendor"
-    else:
+    if num != '' and num != 'n/a':
+        number = int(num)
+        if number == 1:
+            return "vendor"
+        elif number == 2:
+            return "jo vendor"
+    elif num == 'n/a' or num == 'N/A':
         return "n/a"
+    else:
+        return ''
 
 
 def convert_due_time(num):
@@ -273,7 +426,7 @@ def convert_due_time(num):
         elif number == 2:
             return "Afati kohor i shkurtuar"
     else:
-        return "n/a"
+        return ""
 
 
 def convert_criteria_type(num):
@@ -283,7 +436,105 @@ def convert_criteria_type(num):
             return "Çmimi më i ulët"
         elif number == 2:
             return "Tenderi ekonomikisht më i favorshëm"
+        elif number == 3:
+            return "Çmimi më i ulët me poentim"
     else:
+        return ""
+
+
+def convert_planned_number(num):
+    if num != "":
+        if num.find("1") != -1:
+            return "po"
+        elif num.find("2") != -1:
+            return "jo"
+    else:
+        return ""
+
+
+def convert_complaints(num):
+    if num != "n/a" and num != "N/A" and num != "" and num != " ":
+        complaintType = int(num)
+        if complaintType == 1:
+            return "negativ"
+        elif complaintType == 2:
+            return "pozitiv"
+    elif num == "n/a" or num == "N/A":
         return "n/a"
+    else:
+        return ""
+
+
+def convert_complaints_second(num):
+    if num != "" and num != "n/a" and num != "N/A" and num != " ":
+        complaintType = int(num)
+        if complaintType == 0:
+            return "nuk ka"
+        elif complaintType == 1:
+            return "negativ"
+        elif complaintType == 2:
+            return "pozitiv"
+    elif num == "n/a" or num == "N/A":
+        return "n/a"
+    else:
+        return ""
+
+
+def convert_date_range(date_str, year):
+    if date_str != "" and date_str != "n/a":
+        if date_str.find('muaj') != -1 or date_str.find('dite') != -1 or date_str.find('ditë') != -1:
+            return date_str
+        else:
+            if date_str.startswith('nd') or date_str.startswith('a') or date_str == "":
+                today = date.today()
+                today = today.strftime(str("1.1."+str(year)))
+                return datetime.strptime(today, '%d.%m.%y')
+            elif date_str.find(",") != -1:
+                date_str = date_str.replace(',', '.')
+                date_str = date_str[0: 10]
+                return datetime.strptime(date_str, '%d.%m.%y'),
+            elif date_str.find('/') != -1:
+                date_str = date_str.replace('/', '.')
+                date_str = date_str[0: 10]
+                return datetime.strptime(date_str, '%d.%m.%y')
+            else:
+                ate_str = date_str[0: 10]
+                if len(date_str[6:]) == 2:
+                    day = date_str[0:2]
+                    month = date_str[3:5]
+                    datet = ""
+                    datet = date_str[6:]
+                    final_date = str(day) + "."+str(month)+"."+datet
+                    return datetime.strptime(final_date, '%d.%m.%y')
+    else:
+        return None
+
+
+def convert_rentender(string):
+    lowerCaseString = string.lower()
+    if lowerCaseString == "po" or lowerCaseString == "1":
+        return "po"
+    elif lowerCaseString == "jo" or lowerCaseString == "0":
+        return "jo"
+    elif lowerCaseString == "n/a" or lowerCaseString == "N/A":
+        return "n/a"
+    else:
+        return ""
+
+
+def convert_status(num):
+    if num != "":
+        number = int(num)
+        if number == 1:
+            return "publikuar"
+        elif number == 2:
+            return "vlerësim"
+        elif number == 3:
+            return "anuluar"
+        elif number == 4:
+            return "kontraktuar"
+    else:
+        return ""
+
 
 parse()
