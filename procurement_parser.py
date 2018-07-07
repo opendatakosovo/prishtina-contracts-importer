@@ -267,25 +267,17 @@ def convert_price(num):
         price = num.strip().replace("€", "").replace(" ", "")
         if price.find('.') == (len(price)-3):
             priceArray = price.split('.')
-            # print " %s = %s " % (priceArray, price)
             if priceArray[0].find(','):
-                # print "[%s] . [%s] " % (
-                    # priceArray[0].replace(",", ""), priceArray[1])
                 return '{:,.0f}'.format(
                     float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
-                # print " [%s] . [%s] " % (priceArray[0], priceArray[1])
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         elif price.find(',') == (len(price)-3):
             priceArray = price.split(',')
-            # print " %s = %s " % (priceArray, price)
             if priceArray[0].find('.'):
-                # print " [%s] . [%s] " % (
-                    # priceArray[0].replace(".", ""), priceArray[1])
                 return '{:,.0f}'.format(
                     float(priceArray[0].replace(".", "")))+"."+priceArray[1]
             else:
-                #print " [%s] . [%s] " % (priceArray[0], priceArray[1])
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         elif price.find('.') == (len(price)-2):
             priceArray = price.split('.')
