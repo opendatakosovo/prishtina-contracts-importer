@@ -170,7 +170,6 @@ def parse():
                         "installments": installments,
                         "lastInstallmentPayDate":  lastInstallmentPayDate,
                         "lastInstallmentAmount": lastInstallmentAmount,
-
                         "year": year,
                         "flagStatus": None,
                         "applicationDeadlineType": applicationDeadlineType,
