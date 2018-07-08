@@ -164,14 +164,12 @@ def parse():
                         "complaintsToOshp2": complaintsToOshp2,
                         "retender": retender,
                         "status": status,
-                        "signingDate": signed_date,
                         "noOfPaymentInstallments": noOfPaymentInstallments,
                         "directorates": directorates,
                         "nameOfProcurementOffical": nameOfProcurementOffical,
                         "installments": installments,
                         "lastInstallmentPayDate":  lastInstallmentPayDate,
                         "lastInstallmentAmount": lastInstallmentAmount,
-
                         "year": year,
                         "flagStatus": None,
                         "applicationDeadlineType": applicationDeadlineType,
@@ -189,7 +187,8 @@ def parse():
                             "publicationDateOfGivenContract": publicationDateOfGivenContract,
                             "closingDate": closingDate,
                             "discountAmountFromContract": discountAmountFromContract,
-                            "file": ""
+                            "file": "",
+                            "signingDate": signed_date
                         },
                         "company": {
                             "name": companyName,
@@ -256,10 +255,7 @@ def convert_date(date_str, year):
     elif date_str == "n/a" or date_str == "N/A" or date_str == "0":
         return None
     else:
-        today = date.today()
-        year = str(year)
-        today = '1.1.'+year[2:4]
-        return datetime.strptime(today, '%d.%m.%y')
+        return None
 
 
 def convert_price(num):

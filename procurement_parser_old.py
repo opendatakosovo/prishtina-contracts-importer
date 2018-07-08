@@ -170,7 +170,7 @@ def convert_date(date_str, year):
             datet = date_str[6:]
             datet = str(20)+datet
             final_date = str(day) + "."+str(month)+"." + datet
-            return datetime.strptime(final_date, '%d.%m.%Y')
+            return None
         return datetime.strptime(date_str, '%d.%m.%Y')
 
 
