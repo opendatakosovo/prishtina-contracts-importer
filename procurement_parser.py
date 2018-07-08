@@ -164,7 +164,6 @@ def parse():
                         "complaintsToOshp2": complaintsToOshp2,
                         "retender": retender,
                         "status": status,
-                        "signingDate": signed_date,
                         "noOfPaymentInstallments": noOfPaymentInstallments,
                         "directorates": directorates,
                         "nameOfProcurementOffical": nameOfProcurementOffical,
@@ -189,7 +188,8 @@ def parse():
                             "publicationDateOfGivenContract": publicationDateOfGivenContract,
                             "closingDate": closingDate,
                             "discountAmountFromContract": discountAmountFromContract,
-                            "file": ""
+                            "file": "",
+                            "signingDate": signed_date
                         },
                         "company": {
                             "name": companyName,
