@@ -1,1 +1,5 @@
 venv/
+.DS_Store
+data/.DS_Store
+data/procurements/.DS_Store
+data/expense/.DS_Store

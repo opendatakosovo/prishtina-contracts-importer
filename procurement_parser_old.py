@@ -6,6 +6,7 @@ from datetime import datetime, date
 from slugify import slugify
 from pymongo import MongoClient
 from utils import Utils
+import re
 
 # Connect to default local instance of mongo
 client = MongoClient()
@@ -174,18 +175,50 @@ def convert_date(date_str, year):
 
 
 def convert_price(num):
-    if isinstance(num, str):
-        if num.startswith('A') or num.startswith('a') or 'p' in num or num == "":
-            return 0
-        elif ',' in num:
-            return float(num.replace(',', ''))
-        elif num == 'N/A':
-            return 0
+    if num != "" and num != "#VALUE!" and num.find("-") == -1 and num != "0":
+        price = num.strip().replace("€", "").replace(" ", "")
+        if price.find('.') == (len(price)-3):
+            priceArray = price.split('.')
+            if priceArray[0].find(','):
+                return '{:,.0f}'.format(
+                    float(priceArray[0].replace(",", "")))+"."+priceArray[1]
+            else:
+                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
+        elif price.find(',') == (len(price)-3):
+            priceArray = price.split(',')
+            if priceArray[0].find('.'):
+                return '{:,.0f}'.format(
+                    float(priceArray[0].replace(".", "")))+"."+priceArray[1]
+            else:
+                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
+        elif price.find('.') == (len(price)-2):
+            priceArray = price.split('.')
+            if priceArray[0].find(",") != 1:
+                return '{:,.0f}'.format(float(priceArray[0].replace(',', "")))+"."+priceArray[1]+"0"
+            else:
+                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]+"0"
+        elif price.find(',') == (len(price)-2):
+            priceArray = price.split('.')
+            if priceArray[0].find(",") != 1:
+                return '{:,.0f}'.format(float(priceArray[0].replace(',', "")))+"."+priceArray[1]+"0"
+            else:
+                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]+"0"
+        elif num == "n/a" or num == "N/A" or num == " n/a ":
+            return num
+        elif num == "0":
+            return "0.00"
+        elif num.find("-") != -1:
+            return ""
+        elif num.find('p') != -1:
+            priceFormated = re.sub("[^0-9]", "", num)
+            return '${:,.2f}'.format(float(priceFormated))
+        elif int(num.replace(".", "").replace(",", "")) > 0 and num.find('p') == -1:
+            return '{:,.2f}'.format(float(num.replace(".", "").replace(",", "")))
         else:
-            num = num.decode('unicode_escape').encode('ascii', 'ignore')
-            return float(num)
+            print num
+            return ""
     else:
-        return float(num)
+        return ""
 
 
 def remove_quotes(name):
