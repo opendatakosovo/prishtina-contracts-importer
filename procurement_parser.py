@@ -255,10 +255,7 @@ def convert_date(date_str, year):
     elif date_str == "n/a" or date_str == "N/A" or date_str == "0":
         return None
     else:
-        today = date.today()
-        year = str(year)
-        today = '1.1.'+year[2:4]
-        return datetime.strptime(today, '%d.%m.%y')
+        return None
 
 
 def convert_price(num):
