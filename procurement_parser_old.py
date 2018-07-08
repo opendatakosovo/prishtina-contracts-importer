@@ -12,8 +12,8 @@ import re
 client = MongoClient()
 
 # Get database and collection
-db = client.kosovoprocurements2
-collection = db.procurements
+db = client.opencontracts
+collection = db.contracts
 utils = Utils()
 
 
