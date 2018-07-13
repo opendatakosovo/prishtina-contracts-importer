@@ -14,6 +14,7 @@ client = MongoClient()
 # Get database and collection
 db = client.opencontracts
 collection = db.contracts
+collectionDataset = db.datasets;
 utils = Utils()
 
 
@@ -22,6 +23,12 @@ def parse():
     print "Importing procurements data."
     for filename in os.listdir('data/procurements/old'):
         print filename
+        collectionDataset.insert({
+            "datasetFilePath": filename,
+            "folder":"old",
+            "createdAt": datetime.now().isoformat(),
+            "updatedAt": datetime.now().isoformat()
+        })
         if(filename.endswith(".csv")):
             with open('data/procurements/old/' + filename, 'rb') as csvfile:
                 reader = csv.reader(csvfile, delimiter=',')
@@ -69,8 +76,8 @@ def parse():
                         "complaintsToAuthority1": "",
                         "complaintsToOshp1": "",
                         "bidOpeningDateTime": None,
-                        "NoOfCompaniesWhoDownloadedTenderDoc": None,
-                        "NoOfCompaniesWhoSubmited": None,
+                        "noOfCompaniesWhoDownloadedTenderDoc": None,
+                        "noOfCompaniesWhoSubmited": None,
                         "startingOfEvaluationDate": None,
                         "endingOfEvaluationDate": None,
                         "startingAndEndingEvaluationDate": None,
@@ -85,8 +92,8 @@ def parse():
                         "directorates": "",
                         "nameOfProcurementOffical": "",
                         "installments": [],
-                        "lastInstallmendPayDate":  None,
-                        "lastInstallmendAmount": "",
+                        "lastInstallmentPayDate":  None,
+                        "lastInstallmentAmount": "",
                         "totalAmount": None,
                         "year": year,
                         "flagStatus": None,

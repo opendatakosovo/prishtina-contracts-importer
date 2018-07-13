@@ -11,8 +11,9 @@ from utils import Utils
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontracts
-collection = db.contracts
+db = client.kosovoprocurements2
+collection = db.procurements
+collectionDataset = db.datasets;
 utils = Utils()
 
 
@@ -21,6 +22,12 @@ def parse():
     print "Importing procurements data."
     for filename in os.listdir('data/procurements/new'):
         print filename
+        collectionDataset.insert({
+            "datasetFilePath": filename,
+            "folder":"old",
+            "createdAt": datetime.now().isoformat(),
+            "updatedAt": datetime.now().isoformat()
+        })
         if(filename.endswith(".csv")):
             with open('data/procurements/new/' + filename, 'rb') as csvfile:
                 reader = csv.reader(csvfile, delimiter=',')
