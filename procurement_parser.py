@@ -24,7 +24,7 @@ def parse():
         print filename
         collectionDataset.insert({
             "datasetFilePath": filename,
-            "folder":"old",
+            "folder":"new",
             "createdAt": datetime.now().isoformat(),
             "updatedAt": datetime.now().isoformat()
         })
