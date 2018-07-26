@@ -94,8 +94,8 @@ def parse():
                 totalAmountOfContractsIncludingTaxes = convert_price(
                     row[35])
                 noOfPaymentInstallments = convert_nr(row[36])
-                totalValueOfAnnexContract1 = convert_price(row[37])
-                annexContractSigningDate1 = convert_date(row[38], year)
+                totalValueOfAnnexContract1 = convert_price(row[38])
+                annexContractSigningDate1 = convert_date(row[37], year)
                 annexes.append({
                     "totalValueOfAnnexContract1": totalValueOfAnnexContract1,
                     "annexContractSigningDate1": annexContractSigningDate1
@@ -232,7 +232,8 @@ def convert_classification(number):
 
 
 def convert_date(date_str, year):
-    if date_str != "" and date_str != " " and date_str != "n/a" and date_str != "N/A" and date_str.find("€") == -1 and date_str != ".." and date_str != "0":
+    date_str = date_str.strip();
+    if date_str != "" and date_str != " " and date_str != "n/a" and date_str != "N/A" and date_str.find("€") == -1 and date_str != ".." and date_str != "0" and date_str != "Ankesë":
         if date_str.find(',') != -1:
             splitedDate = date_str.split(',')
             if len(splitedDate[0]) < 2 and len(splitedDate) > 3:
@@ -240,6 +241,9 @@ def convert_date(date_str, year):
                     splitedDate[0], splitedDate[1], splitedDate[2])
             elif len(splitedDate[1]) < 2 and len(splitedDate) > 3:
                 date_str = "%s.0%s.%s" % (
+                    splitedDate[0], splitedDate[1], splitedDate[2])
+            elif len(splitedDate[2]) == 2 :
+                date_str = "%s.%s.%s" % (
                     splitedDate[0], splitedDate[1], splitedDate[2])
         elif date_str.find('.') != -1:
             splitedDate = date_str.split('.')
@@ -256,11 +260,8 @@ def convert_date(date_str, year):
         return datetime.strptime(date_str, '%d.%m.%y')
     elif date_str == "n/a" or date_str == "N/A" or date_str == "0":
         return None
-    else:
-        today = date.today()
-        year = str(year)
-        today = '1.1.'+year[2:4]
-        return datetime.strptime(today, '%d.%m.%y')
+    elif date_str == "":
+        return None
 
 
 def convert_price(num):
@@ -293,14 +294,12 @@ def convert_price(num):
             else:
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]+"0"
         elif num == "n/a" or num == "N/A" or num == " n/a ":
-            #print num
             return num
         elif num == "0":
             return "0.00"
         elif num.find("-") != -1:
             return ""
         else:
-            print num
             return ""
     else:
         return ""
@@ -474,8 +473,8 @@ def convert_complaints_second(num):
 
 
 def convert_date_range(date_str, year):
-    if date_str != "" and date_str != "n/a":
-        if date_str.find('muaj') != -1 or date_str.find('dite') != -1 or date_str.find('ditë') != -1:
+    if date_str != "" and date_str != "n/a" and date_str.strip().lower() != "vazhdon" and date_str.strip().lower() != "vazhon" and date_str.strip().lower() != "vazdhon" and date_str.strip().lower() != "ne ankese"and date_str.strip().lower() != "e nderprere":
+        if date_str.strip().find('muaj') != -1 or date_str.strip().find('dite') != -1 or date_str.strip().find('ditë') != -1:
             return date_str
         else:
             if date_str.startswith('nd') or date_str.startswith('a') or date_str == "":
