@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import csv
-import os
+import csv, os, sys, unicodedata
+
 from datetime import datetime, date
 from slugify import slugify
 from pymongo import MongoClient
 from utils import Utils
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
 # Connect to default local instance of mongo
 client = MongoClient()
 
@@ -100,8 +102,8 @@ def parse():
                     totalAmountOfContractsIncludingTaxes = convert_price(
                         row[35])
                     noOfPaymentInstallments = convert_nr(row[36])
-                    totalValueOfAnnexContract1 = convert_price(row[37])
-                    annexContractSigningDate1 = convert_date(row[38], year)
+                    totalValueOfAnnexContract1 = convert_price(row[38])
+                    annexContractSigningDate1 = convert_date(row[37], year)
                     annexes.append({
                         "totalValueOfAnnexContract1": totalValueOfAnnexContract1,
                         "annexContractSigningDate1": annexContractSigningDate1
@@ -237,7 +239,8 @@ def convert_classification(number):
 
 
 def convert_date(date_str, year):
-    if date_str != "" and date_str != " " and date_str != "n/a" and date_str != "N/A" and date_str.find("€") == -1 and date_str != ".." and date_str != "0":
+    date_str = date_str.strip()
+    if date_str != "" and date_str != " " and date_str != "n/a" and date_str != "N/A" and date_str.find("€") == -1 and date_str != ".." and date_str != "0" and date_str != "Ankesë":
         if date_str.find(',') != -1:
             splitedDate = date_str.split(',')
             if len(splitedDate[0]) < 2 and len(splitedDate) > 3:
@@ -246,6 +249,8 @@ def convert_date(date_str, year):
             elif len(splitedDate[1]) < 2 and len(splitedDate) > 3:
                 date_str = "%s.0%s.%s" % (
                     splitedDate[0], splitedDate[1], splitedDate[2])
+            elif len(splitedDate[2]) ==2 :
+                date_str = "%s.%s.%s" % (splitedDate[0], splitedDate[1], splitedDate[2])
         elif date_str.find('.') != -1:
             splitedDate = date_str.split('.')
             if len(splitedDate[0]) < 2 and len(splitedDate) > 3:
@@ -302,7 +307,7 @@ def convert_price(num):
         elif num.find("-") != -1:
             return ""
         else:
-            print num
+            #print num
             return ""
     else:
         return ""
@@ -476,7 +481,7 @@ def convert_complaints_second(num):
 
 
 def convert_date_range(date_str, year):
-    if date_str != "" and date_str != "n/a":
+    if date_str != "" and date_str != "n/a" and date_str.strip().lower() != "vazhdon" and date_str.strip().lower() != "vazhon" and date_str.strip().lower() != "vazdhon" and date_str.strip().lower() != "ne ankese"and date_str.strip().lower() != "e nderprere":
         if date_str.find('muaj') != -1 or date_str.find('dite') != -1 or date_str.find('ditë') != -1:
             return date_str
         else:
