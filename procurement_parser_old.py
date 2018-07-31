@@ -12,7 +12,7 @@ import re
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontracts
+db = client.opencontrats
 collection = db.contracts
 collectionDataset = db.datasets;
 utils = Utils()
@@ -96,7 +96,7 @@ def parse():
                         "lastInstallmentAmount": "",
                         "totalAmount": None,
                         "year": year,
-                        "flagStatus": None,
+                        "flagStatus": 0,
                         "applicationDeadlineType": afati_kohor,
                         "contract": {
                             "predictedValue": contract_value,
@@ -124,7 +124,8 @@ def parse():
                             },
                             "type": tipi_operatorit,
                             "standardDocuments": None
-                        }
+                        },
+                        "createdAt": datetime(int(year),1,1)
                     }
 
                     line_number = line_number + 1
@@ -169,15 +170,15 @@ def convert_date(date_str, year):
     else:
         date_str = date_str[0: 10]
 
-        if len(date_str[6:]) == 2:
+        if len(date_str[6:]) ==2:
             day = date_str[0:2]
-            month = date_str[3:5]
+            month =  date_str[3:5]
             datet = ""
-
+        
             datet = date_str[6:]
-            datet = str(20)+datet
-            final_date = str(day) + "."+str(month)+"." + datet
-            return None
+            datet = str(20)+datet            
+            final_date = str(day) +"."+str(month)+"." + datet
+            return datetime.strptime(final_date, '%d.%m.%Y')
         return datetime.strptime(date_str, '%d.%m.%Y')
 
 

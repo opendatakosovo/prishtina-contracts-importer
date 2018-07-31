@@ -13,7 +13,7 @@ sys.setdefaultencoding('utf-8')
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontracts
+db = client.opencontrats
 collection = db.contracts
 collectionDataset = db.datasets;
 utils = Utils()
@@ -180,7 +180,7 @@ def parse():
                         "lastInstallmentPayDate":  lastInstallmentPayDate,
                         "lastInstallmentAmount": lastInstallmentAmount,
                         "year": year,
-                        "flagStatus": None,
+                        "flagStatus": 0,
                         "applicationDeadlineType": applicationDeadlineType,
                         "contract": {
                             "predictedValue": predictedValue,
@@ -208,7 +208,8 @@ def parse():
                             },
                             "type": companyType,
                             "standardDocuments": standardDocuments
-                        }
+                        },
+                        "createdAt": datetime(int(year),1,1)
                     }
 
                     line_number = line_number + 1
