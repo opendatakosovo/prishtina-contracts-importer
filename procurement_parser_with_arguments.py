@@ -12,7 +12,7 @@ import sys
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontracts
+db = client.opencontrats
 collection = db.contracts
 utils = Utils()
 
@@ -172,7 +172,7 @@ def parse():
                     "lastInstallmentPayDate":  lastInstallmentPayDate,
                     "lastInstallmentAmount": lastInstallmentAmount,
                     "year": year,
-                    "flagStatus": None,
+                    "flagStatus": 0,
                     "applicationDeadlineType": applicationDeadlineType,
                     "contract": {
                         "predictedValue": predictedValue,
@@ -201,7 +201,8 @@ def parse():
                         },
                         "type": companyType,
                         "standardDocuments": standardDocuments
-                    }
+                    },
+                    "createdAt": datetime(int(year),1,1)
                 }
 
                 line_number = line_number + 1
