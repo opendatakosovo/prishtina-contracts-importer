@@ -13,7 +13,7 @@ sys.setdefaultencoding('utf-8')
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontracts
+db = client.opencontrats
 collection = db.contracts
 collectionDataset = db.datasets;
 utils = Utils()
@@ -126,7 +126,7 @@ def parse():
                     lastInstallmentPayDate = convert_date(row[45], year)
                     lastInstallmentAmount = convert_price(row[46])
                     totalPayedPriceForContract = convert_price(row[47])
-                    directorates = row[48]
+                    directorates = row[48].strip()
                     nameOfProcurementOffical = row[49]
 
                     # TODO: Convert this to Date
