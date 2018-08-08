@@ -6,6 +6,7 @@ from datetime import datetime, date
 from slugify import slugify
 from pymongo import MongoClient
 from utils import Utils
+import re
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -85,19 +86,7 @@ def parse():
                     status = convert_status(row[30])
                     companyName = remove_quotes(row[31])
                     signed_date = convert_date(row[32], year)
-                    if row[33].find("-") != -1:
-                        startingAndEndingEvaluationDateArray = row[33].split(
-                            '-')
-                        implementationDeadlineStartingDate = convert_date(
-                            startingAndEndingEvaluationDateArray[0], year)
-                        implementationDeadlineEndingDate = convert_date(
-                            startingAndEndingEvaluationDateArray[1], year)
-                        implementationDeadlineStartingAndEndingDate = None
-                    else:
-                        implementationDeadlineStartingDate = None
-                        implementationDeadlineEndingDate = None
-                        implementationDeadlineStartingAndEndingDate = convert_date_range(
-                            row[33], year)
+                    implementationDeadline =row[33]
                     closingDate = convert_date_range(row[34], year)
                     totalAmountOfContractsIncludingTaxes = convert_price(
                         row[35])
@@ -148,6 +137,7 @@ def parse():
 
                     report = {
                         "activityTitle": activity_title_of_procurement,
+                        "activityTitleSlug": slugify(activity_title_of_procurement),
                         "procurementNo": procurmentNo,
                         "procurementType": type_of_procurement,
                         "procurementValue": value_of_procurement,
@@ -175,6 +165,7 @@ def parse():
                         "status": status,
                         "noOfPaymentInstallments": noOfPaymentInstallments,
                         "directorates": directorates,
+                        "directoratesSlug": slugify(directorates),
                         "nameOfProcurementOffical": nameOfProcurementOffical,
                         "installments": installments,
                         "lastInstallmentPayDate":  lastInstallmentPayDate,
@@ -189,9 +180,8 @@ def parse():
                             "totalPayedPriceForContract": totalPayedPriceForContract,
                             "annexes": annexes,
                             "criteria": criteria,
-                            "implementationDeadlineStartingDate": implementationDeadlineStartingDate,
-                            "implementationDeadlineEndingDate": implementationDeadlineEndingDate,
-                            "implementationDeadlineStartingAndEndingDate": implementationDeadlineStartingAndEndingDate,
+                            "implementationDeadline": implementationDeadline,
+                            "implementationDeadlineSlug": slugify(implementationDeadline),
                             "publicationDate": publicationDate,
                             "publicationDateOfGivenContract": publicationDateOfGivenContract,
                             "closingDate": closingDate,
@@ -272,46 +262,58 @@ def convert_date(date_str, year):
 
 
 def convert_price(num):
-    if num != "" and num != "#VALUE!" and num.find("-") == -1 and num != "0":
-        price = num.strip().replace("€", "").replace(" ", "")
-        if price.find('.') == (len(price)-3):
-            priceArray = price.split('.')
-            if priceArray[0].find(','):
+    num = num.strip()
+    if num != "" and num != "#VALUE!" and num.find('-') == -1 and num != '0' and num != 'n/a' and num != 'N/A' and num != 'Qm.mujor':
+        numFormatted = re.sub('([a-zA-Z€])','',num).strip()
+        firstIndexOfFloatingPoint = len(numFormatted) - 3 
+        secondIndexOfFloatingPoint = len(numFormatted) - 2 
+        if numFormatted[firstIndexOfFloatingPoint] == '.':
+            priceArray = numFormatted.split('.')
+            if priceArray[0].find(',') != -1:
                 return '{:,.0f}'.format(
                     float(priceArray[0].replace(",", "")))+"."+priceArray[1]
+            elif priceArray[0].find('.') != -1:
+                return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
-        elif price.find(',') == (len(price)-3):
-            priceArray = price.split(',')
-            if priceArray[0].find('.'):
+        elif numFormatted[secondIndexOfFloatingPoint] == '.':
+            priceArray = numFormatted.split('.')
+            if priceArray[0].find(',') != -1:
                 return '{:,.0f}'.format(
-                    float(priceArray[0].replace(".", "")))+"."+priceArray[1]
+                float(priceArray[0].replace(",", "")))+"."+priceArray[1]
+            elif priceArray[0].find('.') != -1:
+                return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
-        elif price.find('.') == (len(price)-2):
-            priceArray = price.split('.')
-            if priceArray[0].find(",") != 1:
-                return '{:,.0f}'.format(float(priceArray[0].replace(',', "")))+"."+priceArray[1]+"0"
+        elif numFormatted[firstIndexOfFloatingPoint] == ',':
+            numArray = list(numFormatted)
+            numArray[firstIndexOfFloatingPoint] = '.'
+            for indx,num in enumerate(numArray):
+                numArray[indx] = ','  if firstIndexOfFloatingPoint != indx and num == '.' else num
+            numFormatted = ''.join(numArray)
+            priceArray = numFormatted.split('.')
+            if priceArray[0].find('.') != -1:
+               return '{:,.0f}'.format(float(priceArray[0].replace(".", "")))+"."+priceArray[1] 
+            elif priceArray[0].find(',') != -1 :
+                return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
-                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]+"0"
-        elif price.find(',') == (len(price)-2):
-            priceArray = price.split('.')
-            if priceArray[0].find(",") != 1:
-                return '{:,.0f}'.format(float(priceArray[0].replace(',', "")))+"."+priceArray[1]+"0"
+                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
+        elif numFormatted[secondIndexOfFloatingPoint] == ',':
+            numArray = list(numFormatted)
+            numArray[secondIndexOfFloatingPoint] = '.'
+            numFormatted = ''.join(numArray)
+            priceArray = numFormatted.split('.')
+            if priceArray[0].find(',') != -1:
+                return '{:,.0f}'.format(
+                float(priceArray[0].replace(",", "")))+"."+priceArray[1]
+            elif priceArray[0].find('.') != -1:
+                return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
-                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]+"0"
-        elif num == "n/a" or num == "N/A" or num == " n/a ":
-            #print num
-            return num
-        elif num == "0":
-            return "0.00"
-        elif num.find("-") != -1:
-            return ""
+                return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         else:
-            #print num
-            return ""
+            return '{:,.0f}'.format(float(numFormatted.replace(",", "")))+".00"
     else:
-        return ""
+        return ''
 
 
 def remove_quotes(name):
