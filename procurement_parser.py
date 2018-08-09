@@ -14,7 +14,7 @@ sys.setdefaultencoding('utf-8')
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontracts
+db = client.opencontrats
 collection = db.contracts
 collectionDataset = db.datasets;
 utils = Utils()
@@ -270,20 +270,25 @@ def convert_price(num):
         if numFormatted[firstIndexOfFloatingPoint] == '.':
             priceArray = numFormatted.split('.')
             if priceArray[0].find(',') != -1:
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(
                     float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             elif priceArray[0].find('.') != -1:
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         elif numFormatted[secondIndexOfFloatingPoint] == '.':
             priceArray = numFormatted.split('.')
             if priceArray[0].find(',') != -1:
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(
                 float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             elif priceArray[0].find('.') != -1:
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         elif numFormatted[firstIndexOfFloatingPoint] == ',':
             numArray = list(numFormatted)
@@ -293,10 +298,13 @@ def convert_price(num):
             numFormatted = ''.join(numArray)
             priceArray = numFormatted.split('.')
             if priceArray[0].find('.') != -1:
+               priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                return '{:,.0f}'.format(float(priceArray[0].replace(".", "")))+"."+priceArray[1] 
             elif priceArray[0].find(',') != -1 :
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         elif numFormatted[secondIndexOfFloatingPoint] == ',':
             numArray = list(numFormatted)
@@ -304,11 +312,14 @@ def convert_price(num):
             numFormatted = ''.join(numArray)
             priceArray = numFormatted.split('.')
             if priceArray[0].find(',') != -1:
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(
                 float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             elif priceArray[0].find('.') != -1:
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         else:
             return '{:,.0f}'.format(float(numFormatted.replace(",", "")))+".00"
