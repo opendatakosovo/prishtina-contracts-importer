@@ -14,7 +14,7 @@ sys.setdefaultencoding('utf-8')
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontracts
+db = client.opencontrats
 collection = db.contracts
 collectionDataset = db.datasets;
 utils = Utils()
@@ -117,23 +117,8 @@ def parse():
                     totalPayedPriceForContract = convert_price(row[47])
                     directorates = row[48].strip()
                     nameOfProcurementOffical = row[49]
-
-                    # TODO: Convert this to Date
-                    # contract_value = convert_price(row[25])
-                    # contract_price = convert_price(row[9])
-                    # aneks_contract_price = convert_price(row[10])
-                    # company = remove_quotes(row[11])
-
-                    # company_address = remove_quotes(row[12])
-                    # company_address_fixed = utils.fix_city_name(
-                    #     company_address)
-                    # company_address_slug = slugify(company_address)
-                    # company_address_slug_fixed = utils.fix_city_slug(
-                    #     company_address_slug)
-                    # tipi_operatorit = convert_company_type(row[13])
-                    # afati_kohor = convert_due_time(row[14])
-                    # kriteret_per_dhenje_te_kontrates = convert_criteria_type(
-                    #     row[15])
+                    headquarters = row[50]
+                    flagStatus = row[51]
 
                     report = {
                         "activityTitle": activity_title_of_procurement,
@@ -171,7 +156,7 @@ def parse():
                         "lastInstallmentPayDate":  lastInstallmentPayDate,
                         "lastInstallmentAmount": lastInstallmentAmount,
                         "year": year,
-                        "flagStatus": 0,
+                        "flagStatus":convert_flagSatus(flagStatus),
                         "applicationDeadlineType": applicationDeadlineType,
                         "contract": {
                             "predictedValue": predictedValue,
@@ -193,8 +178,8 @@ def parse():
                             "name": companyName,
                             "slug": slugify(companyName),
                             "headquarters": {
-                                "name": "",
-                                "slug": ""
+                                "name": headquarters,
+                                "slug": slugify(headquarters)
                             },
                             "type": companyType,
                             "standardDocuments": standardDocuments
@@ -549,6 +534,14 @@ def convert_status(num):
             return "kontraktuar"
     else:
         return ""
+
+def convert_flagSatus(num):
+    if num != "":
+        number = int(num)
+        return number
+    else:
+        return 0
+
 
 
 parse()
