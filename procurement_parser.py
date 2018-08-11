@@ -14,7 +14,7 @@ sys.setdefaultencoding('utf-8')
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontrats
+db = client.opencontracts
 collection = db.contracts
 collectionDataset = db.datasets;
 utils = Utils()
