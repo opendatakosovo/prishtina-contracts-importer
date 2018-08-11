@@ -124,6 +124,7 @@ def parse():
                             "type": tipi_operatorit,
                             "standardDocuments": None
                         },
+                        "imported": True,
                         "createdAt": datetime(int(year),1,1)
                     }
 
