@@ -176,6 +176,7 @@ def parse():
                         "type": companyType,
                         "standardDocuments": standardDocuments
                     },
+                    "imported":True,
                     "createdAt": datetime(int(year),1,1)
                 }
 
