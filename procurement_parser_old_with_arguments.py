@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from utils import Utils
 import re
 import collections
+import sys
 
 # Connect to default local instance of mongo
 client = MongoClient()
@@ -20,115 +21,113 @@ utils = Utils()
 
 
 def parse():
-
     print "Importing procurements data."
-    for filename in os.listdir('data/procurements/old'):
-        print filename
-        collectionDataset.insert({
-            "datasetFilePath": filename,
-            "folder":"old",
-            "createdAt": datetime.now().isoformat(),
-            "updatedAt": datetime.now().isoformat()
-        })
-        if(filename.endswith(".csv")):
-            with open('data/procurements/old/' + filename, 'rb') as csvfile:
-                reader = csv.reader(csvfile, delimiter=',')
-                line_number = 0
-                for row in reader:
-                    year = int(filename.replace('.csv', ''))
-                    budget_type = convert_buget_type(row[0])
-                    nr = convert_nr(row[1])
-                    type_of_procurement = convert_procurement_type(row[2])
-                    value_of_procurement = convert_procurement_value(row[3])
-                    procurement_procedure = convert_procurement_procedure(
-                        row[4])
-                    classification = int(convert_classification(row[5]))
-                    activity_title_of_procurement = remove_quotes(row[6])
-                    signed_date = convert_date(row[7], year)
-                    # TODO: Convert this to Date
-                    contract_value = convert_price(row[8])
-                    contract_price = convert_price(row[9])
-                    aneks_contract_price = convert_price(row[10])
-                    company = remove_quotes(row[11])
+    filename = sys.argv[1]
+    print filename
+    collectionDataset.insert({
+        "datasetFilePath": filename,
+        "folder":"old",
+        "createdAt": datetime.now().isoformat(),
+        "updatedAt": datetime.now().isoformat()
+    })
+    if(filename.endswith(".csv")):
+        with open('data/procurements/old/' + filename, 'rb') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            line_number = 0
+            for row in reader:
+                year = int(filename.replace('.csv', ''))
+                budget_type = convert_buget_type(row[0])
+                nr = convert_nr(row[1])
+                type_of_procurement = convert_procurement_type(row[2])
+                value_of_procurement = convert_procurement_value(row[3])
+                procurement_procedure = convert_procurement_procedure(
+                    row[4])
+                classification = int(convert_classification(row[5]))
+                activity_title_of_procurement = remove_quotes(row[6])
+                signed_date = convert_date(row[7], year)
+                # TODO: Convert this to Date
+                contract_value = convert_price(row[8])
+                contract_price = convert_price(row[9])
+                aneks_contract_price = convert_price(row[10])
+                company = remove_quotes(row[11])
+                company_address = remove_quotes(row[12])
+                company_address_fixed = utils.fix_city_name(
+                    company_address)
+                company_address_slug = slugify(company_address)
+                company_address_slug_fixed = utils.fix_city_slug(
+                    company_address_slug)
+                tipi_operatorit = convert_company_type(row[13])
+                afati_kohor = convert_due_time(row[14])
+                kriteret_per_dhenje_te_kontrates = convert_criteria_type(
+                    row[15])
 
-                    company_address = remove_quotes(row[12])
-                    company_address_fixed = utils.fix_city_name(
-                        company_address)
-                    company_address_slug = slugify(company_address)
-                    company_address_slug_fixed = utils.fix_city_slug(
-                        company_address_slug)
-                    tipi_operatorit = convert_company_type(row[13])
-                    afati_kohor = convert_due_time(row[14])
-                    kriteret_per_dhenje_te_kontrates = convert_criteria_type(
-                        row[15])
-
-                    report = {
-                        "activityTitle": activity_title_of_procurement,
-                        "activityTitleSlug":slugify(activity_title_of_procurement),
-                        "procurementNo": nr,
-                        "procurementType": type_of_procurement,
-                        "procurementValue": value_of_procurement,
-                        "procurementProcedure": procurement_procedure,
-                        "fppClassification": classification,
-                        "planned": None,
-                        "budget": budget_type,
-                        "initiationDate": None,
-                        "approvalDateOfFunds": None,
-                        "torDate": None,
-                        "complaintsToAuthority1": "",
-                        "complaintsToOshp1": "",
-                        "bidOpeningDateTime": None,
-                        "noOfCompaniesWhoDownloadedTenderDoc": None,
-                        "noOfCompaniesWhoSubmited": None,
-                        "startingOfEvaluationDate": None,
-                        "endingOfEvaluationDate": None,
-                        "startingAndEndingEvaluationDate": None,
-                        "noOfRefusedBids": None,
-                        "reapprovalDate": None,
-                        "cancellationNoticeDate": None,
-                        "complaintsToAuthority2": "",
-                        "complaintsToOshp2": "",
-                        "retender": "",
-                        "status": "",
-                        "noOfPaymentInstallments": None,
-                        "directorates": "",
-                        "nameOfProcurementOffical": "",
-                        "installments": [],
-                        "lastInstallmentPayDate":  None,
-                        "lastInstallmentAmount": "",
-                        "year": year,
-                        "flagStatus": 0,
-                        "applicationDeadlineType": afati_kohor,
-                        "contract": {
-                            "predictedValue": contract_value,
-                            "totalAmountOfAllAnnexContractsIncludingTaxes": 0,
-                            "totalAmountOfContractsIncludingTaxes": contract_price,
-                            "totalPayedPriceForContract": None,
-                            "annexes": [],
-                            "criteria": kriteret_per_dhenje_te_kontrates,
-                            "implementationDeadline": "",
-                            "publicationDate": None,
-                            "publicationDateOfGivenContract": None,
-                            "closingDate": None,
-                            "discountAmountFromContract": None,
-                            "file": "",
-                            "signingDate": signed_date,
+                report = {
+                    "activityTitle": activity_title_of_procurement,
+                    "activityTitleSlug":slugify(activity_title_of_procurement),
+                    "procurementNo": nr,
+                    "procurementType": type_of_procurement,
+                    "procurementValue": value_of_procurement,
+                    "procurementProcedure": procurement_procedure,
+                    "fppClassification": classification,
+                    "planned": None,
+                    "budget": budget_type,
+                    "initiationDate": None,
+                    "approvalDateOfFunds": None,
+                    "torDate": None,
+                    "complaintsToAuthority1": "",
+                    "complaintsToOshp1": "",
+                    "bidOpeningDateTime": None,
+                    "noOfCompaniesWhoDownloadedTenderDoc": None,
+                    "noOfCompaniesWhoSubmited": None,
+                    "startingOfEvaluationDate": None,
+                    "endingOfEvaluationDate": None,
+                    "startingAndEndingEvaluationDate": None,
+                    "noOfRefusedBids": None,
+                    "reapprovalDate": None,
+                    "cancellationNoticeDate": None,
+                    "complaintsToAuthority2": "",
+                    "complaintsToOshp2": "",
+                    "retender": "",
+                    "status": "",
+                    "noOfPaymentInstallments": None,
+                    "directorates": "",
+                    "nameOfProcurementOffical": "",
+                    "installments": [],
+                    "lastInstallmentPayDate":  None,
+                    "lastInstallmentAmount": "",
+                    "year": year,
+                    "flagStatus": 0,
+                    "applicationDeadlineType": afati_kohor,
+                    "contract": {
+                        "predictedValue": contract_value,
+                        "totalAmountOfAllAnnexContractsIncludingTaxes": 0,
+                        "totalAmountOfContractsIncludingTaxes": contract_price,
+                        "totalPayedPriceForContract": None,
+                        "annexes": [],
+                        "criteria": kriteret_per_dhenje_te_kontrates,
+                        "implementationDeadline": "",
+                        "publicationDate": None,
+                        "publicationDateOfGivenContract": None,
+                        "closingDate": None,
+                        "discountAmountFromContract": None,
+                        "file": "",
+                        "signingDate": signed_date,
+                    },
+                    "company": {
+                        "name": company,
+                        "slug": slugify(company),
+                        "headquarters": {
+                            "name": company_address_fixed,
+                            "slug": company_address_slug_fixed
                         },
-                        "company": {
-                            "name": company,
-                            "slug": slugify(company),
-                            "headquarters": {
-                                "name": company_address_fixed,
-                                "slug": company_address_slug_fixed
-                            },
-                            "type": tipi_operatorit,
-                            "standardDocuments": None
-                        },
-                        "createdAt": datetime(int(year),1,1)
-                    }
+                        "type": tipi_operatorit,
+                        "standardDocuments": None
+                    },
+                    "createdAt": datetime(int(year),1,1)
+                }
 
-                    line_number = line_number + 1
-                    collection.insert(report)
+                line_number = line_number + 1
+                collection.insert(report)
 
 
 def convert_nr(number):
