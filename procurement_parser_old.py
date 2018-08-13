@@ -13,7 +13,7 @@ import collections
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontracts
+db = client.opencontrats
 collection = db.contracts
 collectionDataset = db.datasets;
 utils = Utils()
@@ -101,8 +101,10 @@ def parse():
                         "applicationDeadlineType": afati_kohor,
                         "contract": {
                             "predictedValue": contract_value,
+                            "predictedValueSlug": mySlugify(contract_value),
                             "totalAmountOfAllAnnexContractsIncludingTaxes": 0,
                             "totalAmountOfContractsIncludingTaxes": contract_price,
+                            "totalAmountOfContractsIncludingTaxesSlug": mySlugify(contract_price),
                             "totalPayedPriceForContract": None,
                             "annexes": [],
                             "criteria": kriteret_per_dhenje_te_kontrates,
@@ -374,5 +376,10 @@ def convert_criteria_type(num):
     else:
         return "n/a"
 
+def mySlugify(num):
+    if num != "":
+        return re.sub('[,]','',num)
+    else:
+        return ''
 
 parse()
