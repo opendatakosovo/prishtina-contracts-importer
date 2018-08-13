@@ -14,7 +14,7 @@ sys.setdefaultencoding('utf-8')
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontracts
+db = client.opencontrats
 collection = db.contracts
 collectionDataset = db.datasets;
 utils = Utils()
@@ -160,8 +160,10 @@ def parse():
                         "applicationDeadlineType": applicationDeadlineType,
                         "contract": {
                             "predictedValue": predictedValue,
+                            "predictedValueSlug": mySlugify(predictedValue),
                             "totalAmountOfAllAnnexContractsIncludingTaxes": totalAmountOfAllAnnexContractsIncludingTaxes,
                             "totalAmountOfContractsIncludingTaxes": totalAmountOfContractsIncludingTaxes,
+                            "totalAmountOfContractsIncludingTaxesSlug": mySlugify(totalAmountOfContractsIncludingTaxes),
                             "totalPayedPriceForContract": totalPayedPriceForContract,
                             "annexes": annexes,
                             "criteria": criteria,
@@ -543,6 +545,10 @@ def convert_flagSatus(num):
     else:
         return 0
 
-
+def mySlugify(num):
+    if num != "":
+        return re.sub('[,]','',num)
+    else:
+        return ''
 
 parse()
