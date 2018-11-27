@@ -35,6 +35,8 @@ def parse():
                 reader = csv.reader(csvfile, delimiter=',')
                 line_number = 0
                 for row in reader:
+                    if line_number == 0:
+                        continue
                     year = int(filename.replace('.csv', ''))
                     budget_type = convert_buget_type(row[0])
                     nr = convert_nr(row[1])
