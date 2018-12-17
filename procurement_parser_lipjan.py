@@ -577,7 +577,7 @@ def convert_date_cancellation_signed_lipjan(date_str, year, annex):
                 return datetime.strptime(date_str[index + 2:len(date_str)], '%d.%m.%Y')
         elif len(date_str) > 10 and annex == False:
             first_10_nums = date_str[0:10]
-            if (type(first_10_nums[0:2]) is int):
+            if ('neks' not in first_10_nums):
                 return datetime.strptime(first_10_nums, '%d.%m.%Y')       
     else:
         return ''
