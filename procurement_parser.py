@@ -38,162 +38,161 @@ def parse():
                 installments = []
                 annexes = []
                 for row in reader:
-                    if line_number == 0:
-                        continue
-                    year = int(filename.replace('.csv', ''))
-                    planned = convert_planned_number(row[0])
-                    budget_type = convert_buget_type(row[1])
-                    procurmentNo = convert_nr(row[2])
-                    type_of_procurement = convert_procurement_type(row[3])
-                    value_of_procurement = convert_procurement_value(row[4])
-                    procurement_procedure = convert_procurement_procedure(
-                        row[5])
-                    classification = convert_classification(row[6])
-                    activity_title_of_procurement = remove_quotes(row[7])
-                    initiationDate = convert_date(row[8], year)
-                    approvalDateOfFunds = convert_date(row[9], year)
-                    torDate = convert_date(row[10], year)
-                    publicationDate = convert_date(row[11], year)
-                    complaintsToAuthority1 = convert_complaints(row[12])
-                    complaintsToOshp1 = convert_complaints(row[13])
-                    bidOpeningDate = convert_date(row[14], year)
-                    noOfCompaniesWhoDownloadedTenderDoc = convert_nr(row[15])
-                    noOfCompaniesWhoSubmited = convert_nr(row[16])
-                    if row[17].find("-") != -1:
-                        startingAndEndingEvaluationDateArray = row[17].split(
-                            "-")
-                        startingOfEvaluationDate = convert_date(
-                            startingAndEndingEvaluationDateArray[0], year)
-                        endingOfEvaluationDate = convert_date(
-                            startingAndEndingEvaluationDateArray[1], year)
-                        startingAndEndingEvaluationDate = None
-                    else:
-                        startingOfEvaluationDate = None
-                        endingOfEvaluationDate = None
-                        startingAndEndingEvaluationDate = convert_date_range(
-                            row[17], year)
-                    noOfRefusedBids = convert_nr(row[18])
-                    reapprovalDate = convert_date(row[19], year)
-                    publicationDateOfGivenContract = convert_date(
-                        row[20], year)
-                    cancellationNoticeDate = convert_date(row[21], year)
-                    standardDocuments = convert_date(row[22], year)
-                    complaintsToAuthority2 = convert_complaints_second(row[23])
-                    complaintsToOshp2 = convert_complaints_second(row[24])
-                    predictedValue = convert_price(row[25])
-                    companyType = convert_company_type(row[26])
-                    applicationDeadlineType = convert_due_time(row[27])
-                    criteria = convert_criteria_type(row[28])
-                    retender = convert_rentender(row[29])
-                    status = convert_status(row[30])
-                    companyName = remove_quotes(row[31])
-                    signed_date = convert_date(row[32], year)
-                    implementationDeadline =row[33]
-                    closingDate = convert_date_range(row[34], year)
-                    totalAmountOfContractsIncludingTaxes = convert_price(
-                        row[35])
-                    noOfPaymentInstallments = convert_nr(row[36])
-                    totalValueOfAnnexContract1 = convert_price(row[38])
-                    annexContractSigningDate1 = convert_date(row[37], year)
-                    annexes.append({
-                        "totalValueOfAnnexContract1": totalValueOfAnnexContract1,
-                        "annexContractSigningDate1": annexContractSigningDate1
-                    })
-                    totalAmountOfAllAnnexContractsIncludingTaxes = convert_price(
-                        row[39])
-                    installmentPayDate1 = convert_date(row[40], year)
-                    installmentAmount1 = convert_price(row[41])
-                    installments.append({
-                        "installmentPayDate1": installmentPayDate1,
-                        "installmentAmount1": installmentAmount1
-                    })
-                    installmentPayDate2 = convert_date(row[42], year)
-                    installmentAmount2 = convert_price(row[43])
-                    installments.append({
-                        "installmentPayDate1": installmentPayDate2,
-                        "installmentAmount1": installmentAmount2
-                    })
-                    discountAmountFromContract = convert_price(row[44])
-                    lastInstallmentPayDate = convert_date(row[45], year)
-                    lastInstallmentAmount = convert_price(row[46])
-                    totalPayedPriceForContract = convert_price(row[47])
-                    directorates = row[48].strip()
-                    nameOfProcurementOffical = row[49]
-                    headquarters = row[50]
-                    flagStatus = row[51]
+                    if line_number > 0:
+                        year = int(filename.replace('.csv', ''))
+                        planned = convert_planned_number(row[0])
+                        budget_type = convert_buget_type(row[1])
+                        procurmentNo = convert_nr(row[2])
+                        type_of_procurement = convert_procurement_type(row[3])
+                        value_of_procurement = convert_procurement_value(row[4])
+                        procurement_procedure = convert_procurement_procedure(
+                            row[5])
+                        classification = convert_classification(row[6])
+                        activity_title_of_procurement = remove_quotes(row[7])
+                        initiationDate = convert_date(row[8], year)
+                        approvalDateOfFunds = convert_date(row[9], year)
+                        torDate = convert_date(row[10], year)
+                        publicationDate = convert_date(row[11], year)
+                        complaintsToAuthority1 = convert_complaints(row[12])
+                        complaintsToOshp1 = convert_complaints(row[13])
+                        bidOpeningDate = convert_date(row[14], year)
+                        noOfCompaniesWhoDownloadedTenderDoc = convert_nr(row[15])
+                        noOfCompaniesWhoSubmited = convert_nr(row[16])
+                        if row[17].find("-") != -1:
+                            startingAndEndingEvaluationDateArray = row[17].split(
+                                "-")
+                            startingOfEvaluationDate = convert_date(
+                                startingAndEndingEvaluationDateArray[0], year)
+                            endingOfEvaluationDate = convert_date(
+                                startingAndEndingEvaluationDateArray[1], year)
+                            startingAndEndingEvaluationDate = None
+                        else:
+                            startingOfEvaluationDate = None
+                            endingOfEvaluationDate = None
+                            startingAndEndingEvaluationDate = convert_date_range(
+                                row[17], year)
+                        noOfRefusedBids = convert_nr(row[18])
+                        reapprovalDate = convert_date(row[19], year)
+                        publicationDateOfGivenContract = convert_date(
+                            row[20], year)
+                        cancellationNoticeDate = convert_date(row[21], year)
+                        standardDocuments = convert_date(row[22], year)
+                        complaintsToAuthority2 = convert_complaints_second(row[23])
+                        complaintsToOshp2 = convert_complaints_second(row[24])
+                        predictedValue = convert_price(row[25])
+                        companyType = convert_company_type(row[26])
+                        applicationDeadlineType = convert_due_time(row[27])
+                        criteria = convert_criteria_type(row[28])
+                        retender = convert_rentender(row[29])
+                        status = convert_status(row[30])
+                        companyName = remove_quotes(row[31])
+                        signed_date = convert_date(row[32], year)
+                        implementationDeadline =row[33]
+                        closingDate = convert_date_range(row[34], year)
+                        totalAmountOfContractsIncludingTaxes = convert_price(
+                            row[35])
+                        noOfPaymentInstallments = convert_nr(row[36])
+                        totalValueOfAnnexContract1 = convert_price(row[38])
+                        annexContractSigningDate1 = convert_date(row[37], year)
+                        annexes.append({
+                            "totalValueOfAnnexContract1": totalValueOfAnnexContract1,
+                            "annexContractSigningDate1": annexContractSigningDate1
+                        })
+                        totalAmountOfAllAnnexContractsIncludingTaxes = convert_price(
+                            row[39])
+                        installmentPayDate1 = convert_date(row[40], year)
+                        installmentAmount1 = convert_price(row[41])
+                        installments.append({
+                            "installmentPayDate1": installmentPayDate1,
+                            "installmentAmount1": installmentAmount1
+                        })
+                        installmentPayDate2 = convert_date(row[42], year)
+                        installmentAmount2 = convert_price(row[43])
+                        installments.append({
+                            "installmentPayDate1": installmentPayDate2,
+                            "installmentAmount1": installmentAmount2
+                        })
+                        discountAmountFromContract = convert_price(row[44])
+                        lastInstallmentPayDate = convert_date(row[45], year)
+                        lastInstallmentAmount = convert_price(row[46])
+                        totalPayedPriceForContract = convert_price(row[47])
+                        directorates = row[48].strip()
+                        nameOfProcurementOffical = row[49]
+                        headquarters = row[50]
+                        flagStatus = row[51]
 
-                    report = {
-                        "activityTitle": activity_title_of_procurement,
-                        "activityTitleSlug": slugify(activity_title_of_procurement),
-                        "procurementNo": procurmentNo,
-                        "procurementType": type_of_procurement,
-                        "procurementValue": value_of_procurement,
-                        "procurementProcedure": procurement_procedure,
-                        "fppClassification": classification,
-                        "planned": planned,
-                        "budget": budget_type,
-                        "initiationDate": initiationDate,
-                        "approvalDateOfFunds": approvalDateOfFunds,
-                        "torDate": torDate,
-                        "complaintsToAuthority1": complaintsToAuthority1,
-                        "complaintsToOshp1": complaintsToOshp1,
-                        "bidOpeningDate": bidOpeningDate,
-                        "noOfCompaniesWhoDownloadedTenderDoc": noOfCompaniesWhoDownloadedTenderDoc,
-                        "noOfCompaniesWhoSubmited": noOfCompaniesWhoSubmited,
-                        "startingOfEvaluationDate": startingOfEvaluationDate,
-                        "endingOfEvaluationDate": endingOfEvaluationDate,
-                        "startingAndEndingEvaluationDate": startingAndEndingEvaluationDate,
-                        "noOfRefusedBids": noOfRefusedBids,
-                        "reapprovalDate": reapprovalDate,
-                        "cancellationNoticeDate": cancellationNoticeDate,
-                        "complaintsToAuthority2": complaintsToAuthority2,
-                        "complaintsToOshp2": complaintsToOshp2,
-                        "retender": retender,
-                        "status": status,
-                        "noOfPaymentInstallments": noOfPaymentInstallments,
-                        "directorates": directorates,
-                        "directoratesSlug": slugify(directorates),
-                        "nameOfProcurementOffical": nameOfProcurementOffical,
-                        "installments": installments,
-                        "lastInstallmentPayDate":  lastInstallmentPayDate,
-                        "lastInstallmentAmount": lastInstallmentAmount,
-                        "year": year,
-                        "flagStatus":convert_flagSatus(flagStatus),
-                        "applicationDeadlineType": applicationDeadlineType,
-                        "contract": {
-                            "predictedValue": predictedValue,
-                            "predictedValueSlug": mySlugify(predictedValue),
-                            "totalAmountOfAllAnnexContractsIncludingTaxes": totalAmountOfAllAnnexContractsIncludingTaxes,
-                            "totalAmountOfContractsIncludingTaxes": totalAmountOfContractsIncludingTaxes,
-                            "totalAmountOfContractsIncludingTaxesSlug": mySlugify(totalAmountOfContractsIncludingTaxes),
-                            "totalPayedPriceForContract": totalPayedPriceForContract,
-                            "annexes": annexes,
-                            "criteria": criteria,
-                            "implementationDeadline": implementationDeadline,
-                            "implementationDeadlineSlug": slugify(implementationDeadline),
-                            "publicationDate": publicationDate,
-                            "publicationDateOfGivenContract": publicationDateOfGivenContract,
-                            "closingDate": closingDate,
-                            "discountAmountFromContract": discountAmountFromContract,
-                            "file": "",
-                            "signingDate": signed_date
-                        },
-                        "company": {
-                            "name": companyName,
-                            "slug": slugify(companyName),
-                            "headquarters": {
-                                "name": headquarters,
-                                "slug": slugify(headquarters)
+                        report = {
+                            "activityTitle": activity_title_of_procurement,
+                            "activityTitleSlug": slugify(activity_title_of_procurement),
+                            "procurementNo": procurmentNo,
+                            "procurementType": type_of_procurement,
+                            "procurementValue": value_of_procurement,
+                            "procurementProcedure": procurement_procedure,
+                            "fppClassification": classification,
+                            "planned": planned,
+                            "budget": budget_type,
+                            "initiationDate": initiationDate,
+                            "approvalDateOfFunds": approvalDateOfFunds,
+                            "torDate": torDate,
+                            "complaintsToAuthority1": complaintsToAuthority1,
+                            "complaintsToOshp1": complaintsToOshp1,
+                            "bidOpeningDate": bidOpeningDate,
+                            "noOfCompaniesWhoDownloadedTenderDoc": noOfCompaniesWhoDownloadedTenderDoc,
+                            "noOfCompaniesWhoSubmited": noOfCompaniesWhoSubmited,
+                            "startingOfEvaluationDate": startingOfEvaluationDate,
+                            "endingOfEvaluationDate": endingOfEvaluationDate,
+                            "startingAndEndingEvaluationDate": startingAndEndingEvaluationDate,
+                            "noOfRefusedBids": noOfRefusedBids,
+                            "reapprovalDate": reapprovalDate,
+                            "cancellationNoticeDate": cancellationNoticeDate,
+                            "complaintsToAuthority2": complaintsToAuthority2,
+                            "complaintsToOshp2": complaintsToOshp2,
+                            "retender": retender,
+                            "status": status,
+                            "noOfPaymentInstallments": noOfPaymentInstallments,
+                            "directorates": directorates,
+                            "directoratesSlug": slugify(directorates),
+                            "nameOfProcurementOffical": nameOfProcurementOffical,
+                            "installments": installments,
+                            "lastInstallmentPayDate":  lastInstallmentPayDate,
+                            "lastInstallmentAmount": lastInstallmentAmount,
+                            "year": year,
+                            "flagStatus":convert_flagSatus(flagStatus),
+                            "applicationDeadlineType": applicationDeadlineType,
+                            "contract": {
+                                "predictedValue": predictedValue,
+                                "predictedValueSlug": mySlugify(predictedValue),
+                                "totalAmountOfAllAnnexContractsIncludingTaxes": totalAmountOfAllAnnexContractsIncludingTaxes,
+                                "totalAmountOfContractsIncludingTaxes": totalAmountOfContractsIncludingTaxes,
+                                "totalAmountOfContractsIncludingTaxesSlug": mySlugify(totalAmountOfContractsIncludingTaxes),
+                                "totalPayedPriceForContract": totalPayedPriceForContract,
+                                "annexes": annexes,
+                                "criteria": criteria,
+                                "implementationDeadline": implementationDeadline,
+                                "implementationDeadlineSlug": slugify(implementationDeadline),
+                                "publicationDate": publicationDate,
+                                "publicationDateOfGivenContract": publicationDateOfGivenContract,
+                                "closingDate": closingDate,
+                                "discountAmountFromContract": discountAmountFromContract,
+                                "file": "",
+                                "signingDate": signed_date
                             },
-                            "type": companyType,
-                            "standardDocuments": standardDocuments
-                        },
-                        "imported": True,
-                        "createdAt": datetime(int(year),1,1)
-                    }
+                            "company": {
+                                "name": companyName,
+                                "slug": slugify(companyName),
+                                "headquarters": {
+                                    "name": headquarters,
+                                    "slug": slugify(headquarters)
+                                },
+                                "type": companyType,
+                                "standardDocuments": standardDocuments
+                            },
+                            "imported": True,
+                            "createdAt": datetime(int(year),1,1)
+                        }
+                        collection.insert(report)
 
                     line_number = line_number + 1
-                    collection.insert(report)
                     annexes = []
                     installments = []
 
