@@ -189,6 +189,7 @@ def parse():
                             },
                             "imported": True,
                             "createdAt": datetime(int(year),1,1)
+                            "documents": []
                         }
                         collection.insert(report)
 
