@@ -27,7 +27,6 @@ def parse():
         print filename
         collectionDataset.insert({
             "datasetFilePath": filename,
-            "folder":"new",
             "createdAt": datetime.now().isoformat(),
             "updatedAt": datetime.now().isoformat()
         })
@@ -42,26 +41,26 @@ def parse():
                     if line_number > 0:
                         year = int(filename.replace('.csv', ''))
                         planned = ""
-                        budget_type = convert_buget_type(row[0])
-                        procurmentNo = convert_nr(row[1])
-                        type_of_procurement = convert_procurement_type(row[2])
-                        value_of_procurement = convert_procurement_value(row[3])
+                        budget_type = convert_buget_type(row[1])
+                        procurmentNo = convert_nr(row[2])
+                        type_of_procurement = convert_procurement_type(row[3])
+                        value_of_procurement = convert_procurement_value(row[4])
                         procurement_procedure = convert_procurement_procedure(
-                            row[4])
-                        classification = convert_classification(row[5])
-                        activity_title_of_procurement = remove_quotes(row[6])
-                        initiationDate = convert_date_lipjan(row[7], year)
+                            row[5])
+                        classification = convert_classification(row[6])
+                        activity_title_of_procurement = remove_quotes(row[7])
+                        initiationDate = convert_date_lipjan(row[8], year)
                         approvalDateOfFunds = ""
                         torDate = ""
-                        publicationDate = convert_date(row[8], year)
+                        publicationDate = convert_date(row[11], year)
                         
                         complaintsToAuthority1 = ""
                         complaintsToOshp1 = ""
                         bidOpeningDate = ""
-                        noOfCompaniesWhoDownloadedTenderDoc = int(float(row[20]))
-                        noOfCompaniesWhoSubmited = convert_nr(row[21])
+                        noOfCompaniesWhoDownloadedTenderDoc = convert_nr(row[15])
+                        noOfCompaniesWhoSubmited = convert_nr(row[16])
                         ###
-                        # if row[11].find("-") != -1:
+                        # if row[17].find("-") != -1:
                         #     startingAndEndingEvaluationDateArray = row[17].split(
                         #         "-")
                         #     startingOfEvaluationDate = convert_date(
@@ -78,40 +77,39 @@ def parse():
                         startingOfEvaluationDate = ""
                         endingOfEvaluationDate = ""
                         startingAndEndingEvaluationDate = ""
-                        noOfRefusedBids = convert_nr(row[22])
+                        noOfRefusedBids = convert_nr(row[18])
                         reapprovalDate = ""
                         
                         publicationDateOfGivenContract = convert_date(
-                            row[9], year)
+                            row[20], year)
                         ##
-                        cancellationNoticeDate = ''
+                        cancellationNoticeDate = ""
                         ##
                         standardDocuments = ""
                         complaintsToAuthority2 = ""
                         complaintsToOshp2 = ""
-                        predictedValue = convert_price(row[13])
-                        companyType = convert_company_type(row[19])
-                        applicationDeadlineType = convert_due_time(row[23])
-                        criteria = convert_criteria_type(row[24])
+                        predictedValue = convert_price(row[25])
+                        companyType = convert_company_type(row[26])
+                        applicationDeadlineType = convert_due_time(row[27])
+                        criteria = convert_criteria_type(row[28])
                         retender = ""
                         status = ""
-                        companyName = remove_quotes(row[18])
-                        signed_date = convert_date_cancellation_signed_lipjan(row[10], year, False)
+                        companyName = remove_quotes(row[31])
+                        signed_date = convert_date_cancellation_signed_lipjan(row[32], year, False)
                         #
-                        implementationDeadline = implementation_convert_lipjan(row[11])
+                        implementationDeadline = remove_quotes(row[33])
                         #
-                        closingDate = convert_date_lipjan(row[12], year)
+                        closingDate = convert_date_lipjan(row[34], year)
                         totalAmountOfContractsIncludingTaxes = convert_price(
-                            row[14])
+                            row[35])
                         noOfPaymentInstallments = ""
                         totalValueOfAnnexContract1 = ""
-                        annexContractSigningDate1 = convert_date_cancellation_signed_lipjan(row[10], year, True)
+                        annexContractSigningDate1 = convert_date_cancellation_signed_lipjan(row[37], year, True)
                         annexes.append({
                             "totalValueOfAnnexContract1": totalValueOfAnnexContract1,
                             "annexContractSigningDate1": annexContractSigningDate1
                         })
-                        totalAmountOfAllAnnexContractsIncludingTaxes = convert_price(
-                            row[15])
+                        totalAmountOfAllAnnexContractsIncludingTaxes = ""
                         installmentPayDate1 = ""
                         installmentAmount1 = ""
                         installments.append({
@@ -125,15 +123,14 @@ def parse():
                             "installmentPayDate1": installmentPayDate2,
                             "installmentAmount1": installmentAmount2
                         })
-                        discountAmountFromContract = convert_price(row[16])
+                        discountAmountFromContract = convert_price(row[41])
                         lastInstallmentPayDate = ""
                         lastInstallmentAmount = ""
-                        totalPayedPriceForContract = convert_price(row[17])
-                        directorates = ""
-                        nameOfProcurementOffical = ""
-                        headquarters = ""
+                        totalPayedPriceForContract = convert_price(row[44])
+                        directorates = remove_quotes(row[45].strip())
+                        nameOfProcurementOffical = row[46]
+                        headquarters = u""
                         flagStatus = ""
-
                         report = {
                             "activityTitle": activity_title_of_procurement,
                             "activityTitleSlug": slugify(activity_title_of_procurement),
@@ -338,7 +335,7 @@ def remove_quotes(name):
     if name[len(name)-1] == '"':
         name = name[0: (len(name)-1)]
     '''
-    return name.replace('"', '')
+    return name.replace(u'"', '')
 
 
 def convert_buget_type(number):
