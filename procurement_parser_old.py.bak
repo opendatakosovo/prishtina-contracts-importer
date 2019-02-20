@@ -21,9 +21,9 @@ utils = Utils()
 
 def parse():
 
-    print("Importing procurements data.")
+    print "Importing procurements data."
     for filename in os.listdir('data/procurements/old'):
-        print(filename)
+        print filename
         collectionDataset.insert({
             "datasetFilePath": filename,
             "folder": "old",
@@ -31,7 +31,7 @@ def parse():
             "updatedAt": datetime.now().isoformat()
         })
         if(filename.endswith(".csv")):
-            with open('data/procurements/old/' + filename, 'r') as csvfile:
+            with open('data/procurements/old/' + filename, 'rb') as csvfile:
                 reader = csv.reader(csvfile, delimiter=',')
                 line_number = 0
                 for row in reader:

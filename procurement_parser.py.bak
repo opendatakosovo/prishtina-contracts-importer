@@ -1,144 +1,126 @@
 # -*- coding: utf-8 -*-
 
-import csv
-import os
-import sys
-import unicodedata
+import csv, os, sys, unicodedata
 
 from datetime import datetime, date
 from slugify import slugify
 from pymongo import MongoClient
 from utils import Utils
 import re
-import importlib
 
-importlib.reload(sys)
-# sys.setdefaultencoding('utf-8')
+reload(sys)
+sys.setdefaultencoding('utf-8')
 # Connect to default local instance of mongo
 client = MongoClient()
 
 # Get database and collection
-db = client.opencontractslipjan
+db = client.opencontracts
 collection = db.contracts
-collectionDataset = db.datasets
+collectionDataset = db.datasets;
 utils = Utils()
 
 
 def parse():
-    print("------------------------------------")
-    print("Importing procurements data.")
-    for filename in os.listdir('data/lipjan'):
-        print(filename)
+    print "------------------------------------"
+    print "Importing procurements data."
+    for filename in os.listdir('data/procurements/new'):
+        print filename
         collectionDataset.insert({
             "datasetFilePath": filename,
+            "folder":"new",
             "createdAt": datetime.now().isoformat(),
             "updatedAt": datetime.now().isoformat()
         })
         if(filename.endswith(".csv")):
-            with open('data/lipjan/' + filename, 'r') as csvfile:
+            with open('data/procurements/new/' + filename, 'rb') as csvfile:
                 reader = csv.reader(csvfile, delimiter=',')
                 line_number = 0
                 installments = []
                 annexes = []
-
                 for row in reader:
                     if line_number > 0:
                         year = int(filename.replace('.csv', ''))
-                        planned = ""
+                        planned = convert_planned_number(row[0])
                         budget_type = convert_buget_type(row[1])
                         procurmentNo = convert_nr(row[2])
                         type_of_procurement = convert_procurement_type(row[3])
-                        value_of_procurement = convert_procurement_value(
-                            row[4])
+                        value_of_procurement = convert_procurement_value(row[4])
                         procurement_procedure = convert_procurement_procedure(
                             row[5])
                         classification = convert_classification(row[6])
                         activity_title_of_procurement = remove_quotes(row[7])
-                        initiationDate = convert_date_lipjan(row[8], year)
-                        approvalDateOfFunds = ""
-                        torDate = ""
+                        initiationDate = convert_date(row[8], year)
+                        approvalDateOfFunds = convert_date(row[9], year)
+                        torDate = convert_date(row[10], year)
                         publicationDate = convert_date(row[11], year)
-
-                        complaintsToAuthority1 = ""
-                        complaintsToOshp1 = ""
-                        bidOpeningDate = ""
-                        noOfCompaniesWhoDownloadedTenderDoc = convert_nr(
-                            row[15])
+                        complaintsToAuthority1 = convert_complaints(row[12])
+                        complaintsToOshp1 = convert_complaints(row[13])
+                        bidOpeningDate = convert_date(row[14], year)
+                        noOfCompaniesWhoDownloadedTenderDoc = convert_nr(row[15])
                         noOfCompaniesWhoSubmited = convert_nr(row[16])
-                        ###
-                        # if row[17].find("-") != -1:
-                        #     startingAndEndingEvaluationDateArray = row[17].split(
-                        #         "-")
-                        #     startingOfEvaluationDate = convert_date(
-                        #         startingAndEndingEvaluationDateArray[0], year)
-                        #     endingOfEvaluationDate = convert_date(
-                        #         startingAndEndingEvaluationDateArray[1], year)
-                        #     startingAndEndingEvaluationDate = None
-                        # else:
-                        #     startingOfEvaluationDate = None
-                        #     endingOfEvaluationDate = None
-                        #     startingAndEndingEvaluationDate = convert_date_range(
-                        #         row[17], year)
-                        ##
-                        startingOfEvaluationDate = ""
-                        endingOfEvaluationDate = ""
-                        startingAndEndingEvaluationDate = ""
+                        if row[17].find("-") != -1:
+                            startingAndEndingEvaluationDateArray = row[17].split(
+                                "-")
+                            startingOfEvaluationDate = convert_date(
+                                startingAndEndingEvaluationDateArray[0], year)
+                            endingOfEvaluationDate = convert_date(
+                                startingAndEndingEvaluationDateArray[1], year)
+                            startingAndEndingEvaluationDate = None
+                        else:
+                            startingOfEvaluationDate = None
+                            endingOfEvaluationDate = None
+                            startingAndEndingEvaluationDate = convert_date_range(
+                                row[17], year)
                         noOfRefusedBids = convert_nr(row[18])
-                        reapprovalDate = ""
-
+                        reapprovalDate = convert_date(row[19], year)
                         publicationDateOfGivenContract = convert_date(
                             row[20], year)
-                        ##
-                        cancellationNoticeDate = ""
-                        ##
-                        standardDocuments = ""
-                        complaintsToAuthority2 = ""
-                        complaintsToOshp2 = ""
+                        cancellationNoticeDate = convert_date(row[21], year)
+                        standardDocuments = convert_date(row[22], year)
+                        complaintsToAuthority2 = convert_complaints_second(row[23])
+                        complaintsToOshp2 = convert_complaints_second(row[24])
                         predictedValue = convert_price(row[25])
                         companyType = convert_company_type(row[26])
                         applicationDeadlineType = convert_due_time(row[27])
                         criteria = convert_criteria_type(row[28])
-                        retender = ""
-                        status = ""
+                        retender = convert_rentender(row[29])
+                        status = convert_status(row[30])
                         companyName = remove_quotes(row[31])
-                        signed_date = convert_date_cancellation_signed_lipjan(
-                            row[32], year, False)
-                        #
-                        implementationDeadline = remove_quotes(row[33])
-                        #
-                        closingDate = convert_date_lipjan(row[34], year)
+                        signed_date = convert_date(row[32], year)
+                        implementationDeadline =row[33]
+                        closingDate = convert_date_range(row[34], year)
                         totalAmountOfContractsIncludingTaxes = convert_price(
                             row[35])
-                        noOfPaymentInstallments = ""
-                        totalValueOfAnnexContract1 = ""
-                        annexContractSigningDate1 = convert_date_cancellation_signed_lipjan(
-                            row[37], year, True)
+                        noOfPaymentInstallments = convert_nr(row[36])
+                        totalValueOfAnnexContract1 = convert_price(row[38])
+                        annexContractSigningDate1 = convert_date(row[37], year)
                         annexes.append({
                             "totalValueOfAnnexContract1": totalValueOfAnnexContract1,
                             "annexContractSigningDate1": annexContractSigningDate1
                         })
-                        totalAmountOfAllAnnexContractsIncludingTaxes = ""
-                        installmentPayDate1 = ""
-                        installmentAmount1 = ""
+                        totalAmountOfAllAnnexContractsIncludingTaxes = convert_price(
+                            row[39])
+                        installmentPayDate1 = convert_date(row[40], year)
+                        installmentAmount1 = convert_price(row[41])
                         installments.append({
                             "installmentPayDate1": installmentPayDate1,
                             "installmentAmount1": installmentAmount1
                         })
-                        installmentPayDate2 = ""
-                        installmentAmount2 = ""
-
+                        installmentPayDate2 = convert_date(row[42], year)
+                        installmentAmount2 = convert_price(row[43])
                         installments.append({
                             "installmentPayDate1": installmentPayDate2,
                             "installmentAmount1": installmentAmount2
                         })
-                        discountAmountFromContract = convert_price(row[41])
-                        lastInstallmentPayDate = ""
-                        lastInstallmentAmount = ""
-                        totalPayedPriceForContract = convert_price(row[44])
-                        directorates = remove_quotes(row[45].strip())
-                        nameOfProcurementOffical = row[46]
-                        headquarters = ""
-                        flagStatus = ""
+                        discountAmountFromContract = convert_price(row[44])
+                        lastInstallmentPayDate = convert_date(row[45], year)
+                        lastInstallmentAmount = convert_price(row[46])
+                        totalPayedPriceForContract = convert_price(row[47])
+                        directorates = row[48].strip()
+                        nameOfProcurementOffical = row[49]
+                        headquarters = row[50]
+                        flagStatus = row[51]
+
                         report = {
                             "activityTitle": activity_title_of_procurement,
                             "activityTitleSlug": slugify(activity_title_of_procurement),
@@ -175,7 +157,7 @@ def parse():
                             "lastInstallmentPayDate":  lastInstallmentPayDate,
                             "lastInstallmentAmount": lastInstallmentAmount,
                             "year": year,
-                            "flagStatus": convert_flagSatus(flagStatus),
+                            "flagStatus":convert_flagSatus(flagStatus),
                             "applicationDeadlineType": applicationDeadlineType,
                             "contract": {
                                 "predictedValue": predictedValue,
@@ -206,11 +188,12 @@ def parse():
                                 "standardDocuments": standardDocuments
                             },
                             "imported": True,
-                            "createdAt": datetime(int(year), 1, 1)
+                            "createdAt": datetime(int(year),1,1),
+                            "documents": []
                         }
                         collection.insert(report)
-                    line_number = line_number + 1
 
+                    line_number = line_number + 1
                     annexes = []
                     installments = []
 
@@ -238,7 +221,7 @@ def convert_classification(number):
 
 def convert_date(date_str, year):
     date_str = date_str.strip()
-    if date_str != "" and date_str != " " and date_str != "n/a" and date_str != "N/A" and date_str.find("€") == -1 and date_str != ".." and date_str != "0" and date_str != "Ankesë" and date_str != "NaN":
+    if date_str != "" and date_str != " " and date_str != "n/a" and date_str != "N/A" and date_str.find("€") == -1 and date_str != ".." and date_str != "0" and date_str != "Ankesë":
         if date_str.find(',') != -1:
             splitedDate = date_str.split(',')
             if len(splitedDate[0]) < 2 and len(splitedDate) > 3:
@@ -247,9 +230,8 @@ def convert_date(date_str, year):
             elif len(splitedDate[1]) < 2 and len(splitedDate) > 3:
                 date_str = "%s.0%s.%s" % (
                     splitedDate[0], splitedDate[1], splitedDate[2])
-            elif len(splitedDate[2]) == 2:
-                date_str = "%s.%s.%s" % (
-                    splitedDate[0], splitedDate[1], splitedDate[2])
+            elif len(splitedDate[2]) ==2 :
+                date_str = "%s.%s.%s" % (splitedDate[0], splitedDate[1], splitedDate[2])
         elif date_str.find('.') != -1:
             splitedDate = date_str.split('.')
             if len(splitedDate[0]) < 2 and len(splitedDate) > 3:
@@ -272,55 +254,47 @@ def convert_date(date_str, year):
 def convert_price(num):
     num = num.strip()
     if num != "" and num != "#VALUE!" and num.find('-') == -1 and num != '0' and num != 'n/a' and num != 'N/A' and num != 'Qm.mujor':
-        numFormatted = re.sub('([a-zA-Z€])', '', num).strip()
-        firstIndexOfFloatingPoint = len(numFormatted) - 3
-        secondIndexOfFloatingPoint = len(numFormatted) - 2
+        numFormatted = re.sub('([a-zA-Z€])','',num).strip()
+        firstIndexOfFloatingPoint = len(numFormatted) - 3 
+        secondIndexOfFloatingPoint = len(numFormatted) - 2 
         if numFormatted[firstIndexOfFloatingPoint] == '.':
             priceArray = numFormatted.split('.')
             if priceArray[0].find(',') != -1:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(
                     float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             elif priceArray[0].find('.') != -1:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         elif numFormatted[secondIndexOfFloatingPoint] == '.':
             priceArray = numFormatted.split('.')
             if priceArray[0].find(',') != -1:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(
-                    float(priceArray[0].replace(",", "")))+"."+priceArray[1]
+                float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             elif priceArray[0].find('.') != -1:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         elif numFormatted[firstIndexOfFloatingPoint] == ',':
             numArray = list(numFormatted)
             numArray[firstIndexOfFloatingPoint] = '.'
-            for indx, num in enumerate(numArray):
-                numArray[indx] = ',' if firstIndexOfFloatingPoint != indx and num == '.' else num
+            for indx,num in enumerate(numArray):
+                numArray[indx] = ','  if firstIndexOfFloatingPoint != indx and num == '.' else num
             numFormatted = ''.join(numArray)
             priceArray = numFormatted.split('.')
             if priceArray[0].find('.') != -1:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
-                return '{:,.0f}'.format(float(priceArray[0].replace(".", "")))+"."+priceArray[1]
-            elif priceArray[0].find(',') != -1:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
+               priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
+               return '{:,.0f}'.format(float(priceArray[0].replace(".", "")))+"."+priceArray[1] 
+            elif priceArray[0].find(',') != -1 :
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         elif numFormatted[secondIndexOfFloatingPoint] == ',':
             numArray = list(numFormatted)
@@ -328,17 +302,14 @@ def convert_price(num):
             numFormatted = ''.join(numArray)
             priceArray = numFormatted.split('.')
             if priceArray[0].find(',') != -1:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(
-                    float(priceArray[0].replace(",", "")))+"."+priceArray[1]
+                float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             elif priceArray[0].find('.') != -1:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0].replace(",", "")))+"."+priceArray[1]
             else:
-                priceArray[1] = priceArray[1] + \
-                    "0" if len(priceArray[1]) == 1 else priceArray[1]
+                priceArray[1] =priceArray[1]+"0" if len(priceArray[1]) ==1 else priceArray[1]
                 return '{:,.0f}'.format(float(priceArray[0]))+"."+priceArray[1]
         else:
             return '{:,.0f}'.format(float(numFormatted.replace(",", "")))+".00"
@@ -358,9 +329,8 @@ def remove_quotes(name):
 
 
 def convert_buget_type(number):
-    number = number.replace('.', '')
-    budget_array = []
-    if (number.find('&') != -1):
+    if (number.find('+') != -1) or (number.find(',') != -1):
+        budget_array = []
         if number[:1] == '1':
             budget_array.append("Të hyra vetanake")
         if number[2:3] == '2':
@@ -368,9 +338,10 @@ def convert_buget_type(number):
         if number[4:5] == '3':
             budget_array.append("Donacion")
         return budget_array
+
     value = number[:1]
     if value != "":
-        num = int(value)
+        num = value
         if num == 1:
             return "Të hyra vetanake"
         elif num == 2:
@@ -440,7 +411,7 @@ def convert_procurement_procedure(num):
 
 def convert_company_type(num):
     if num != '' and num != 'n/a':
-        number = int(float(num))
+        number = int(num)
         if number == 1:
             return "vendor"
         elif number == 2:
@@ -569,7 +540,6 @@ def convert_status(num):
     else:
         return ""
 
-
 def convert_flagSatus(num):
     if num != "":
         number = int(num)
@@ -577,58 +547,10 @@ def convert_flagSatus(num):
     else:
         return 0
 
-
 def mySlugify(num):
     if num != "":
-        return re.sub('[,]', '', num)
+        return re.sub('[,]','',num)
     else:
         return ''
-
-
-def convert_date_cancellation_signed_lipjan(date_str, year, annex):
-    if (date_str):
-        date_str = date_str.replace('/', '.')
-        if len(date_str) == 10:
-            return datetime.strptime(date_str[0:10], '%d.%m.%Y')
-        elif annex == True:
-            if ('Aneksi' in date_str):
-                index = date_str.find('i')
-                return datetime.strptime(date_str[index + 2:len(date_str)], '%d.%m.%Y')
-        elif len(date_str) > 10 and annex == False:
-            first_10_nums = date_str[0:10]
-            if ('neks' not in first_10_nums):
-                return datetime.strptime(first_10_nums, '%d.%m.%Y')
-    else:
-        return ''
-
-
-def convert_date_lipjan(date_str, year):
-    if (date_str):
-        date = date_str.replace('/', '.')
-        try:
-            return datetime.strptime(date, '%d.%m.%Y')
-        except:
-            return ''
-    else:
-        return ''
-
-
-def implementation_convert_lipjan(str_date):
-    str_date = str_date.replace('/', '.')
-    if (str_date == ""):
-        return ""
-    elif ("." in str_date[0:10] and "dit" in str_date):
-        str_date = str_date[-10: len(str_date)]
-        index = str_date.find('d')
-        return str_date[0:index].replace(" ", "") + ' ditë'
-    elif ("dit" in str_date):
-        index = str_date.find('d')
-        return str_date[0:index].replace(" ", "") + ' ditë'
-    else:
-        str_date = str_date.replace(" ", "")
-        d1 = datetime.strptime(str_date[0:10], '%d.%m.%Y')
-        d2 = datetime.strptime(str_date[-10: len(str_date)], '%d.%m.%Y')
-        return '%s ditë' % abs((d2 - d1).days)
-
 
 parse()

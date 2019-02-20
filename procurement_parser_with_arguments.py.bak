@@ -19,10 +19,10 @@ utils = Utils()
 
 
 def parse():
-    print("------------------------------------")
-    print("Importing procurements data.")
+    print "------------------------------------"
+    print "Importing procurements data."
     filename = sys.argv[1]
-    print(filename)
+    print filename
     if(filename.endswith(".csv")):
         with open('data/procurements/new/' + filename, 'rb') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')
