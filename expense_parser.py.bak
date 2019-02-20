@@ -13,7 +13,8 @@ collection = db.expenses
 
 def parse():
 
-    print("Importing expense data.")
+    print "Importing expense data."
+
     with open('data/expense/2011.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:

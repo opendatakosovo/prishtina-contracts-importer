@@ -469,7 +469,7 @@ class Utils():
         if city_slug in self.coordinates:
             return self.coordinates[city_slug]
         else:
-            print("'Could not get coordinates for '%s'" % city_slug)
+            print "'Could not get coordinates for '%s'" % city_slug
             return None
 
     def fix_city_name(self, city_name):
