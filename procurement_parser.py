@@ -12,7 +12,6 @@ from utils import Utils
 import re
 import importlib
 
-importlib.reload(sys)
 # Connect to default local instance of mongo
 client = MongoClient()
 
