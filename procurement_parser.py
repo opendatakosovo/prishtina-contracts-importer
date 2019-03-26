@@ -38,7 +38,71 @@ def parse():
                 line_number = 0
                 installments = []
                 annexes = []
+                annex_amount_1 = 37
+                annex_date_1 = 38
+                annex_amount_2 = 0
+                annex_date_2 = 0
+                annex_amount_3 = 0
+                annex_date_3 = 0
+                annex_amount_4 = 0
+                annex_date_4 = 0
+                installment_amount_1 = 0
+                installment_date_1 = 0
+                installment_amount_2 = 0
+                installment_date_2 = 0
+                installment_amount_3 = 0
+                installment_date_3 = 0
+                installment_amount_4 = 0
+                installment_date_4 = 0
+                deduction_amount = 0
+                last_installment_amount = 0
+                last_installment_date = 0
+                total_payed_price = 0
+                directorate = 0
+                name_of_procurement = 0
+                company_headquarters = 0
+                flag_status = 0
                 for row in reader:
+                    if filename == '2019.csv' or filename == '2017.csv':
+                        annex_amount_1 = 37
+                        annex_date_1 = 38
+                        installment_date_1 = 39
+                        installment_amount_1 = 40
+                        installment_date_2 = 41
+                        installment_amount_2 = 42
+                        deduction_amount = 43
+                        last_installment_date = 44
+                        last_installment_amount = 45
+                        total_payed_price = 46
+                        directorate = 47
+                        name_of_procurement = 48
+                        company_headquarters = 49
+                        flag_status = 50
+                    if filename == '2018.csv':
+                        annex_amount_1 = 37
+                        annex_date_1 = 38
+                        annex_amount_2 = 39
+                        annex_date_2 = 40
+                        annex_amount_3 = 41
+                        annex_date_3 = 42
+                        annex_amount_4 = 43
+                        annex_date_4 = 44
+                        installment_amount_1 = 46
+                        installment_date_1 = 45
+                        installment_amount_2 = 48
+                        installment_date_2 = 47
+                        installment_amount_3 = 50
+                        installment_date_3 = 49
+                        installment_amount_4 = 52
+                        installment_date_4 = 51
+                        deduction_amount = 53
+                        last_installment_amount = 55
+                        last_installment_date = 54
+                        total_payed_price = 56
+                        directorate = 57
+                        name_of_procurement = 58
+                        company_headquarters = 59
+                        flag_status = 60
                     if line_number > 0:
                         year = int(filename.replace('.csv', ''))
                         planned = convert_planned_number(row[0])
@@ -96,34 +160,68 @@ def parse():
                         totalAmountOfContractsIncludingTaxes = convert_price(
                             row[35])
                         noOfPaymentInstallments = convert_nr(row[36])
-                        totalValueOfAnnexContract1 = convert_price(row[38])
-                        annexContractSigningDate1 = convert_date(row[37], year)
+                        totalValueOfAnnexContract1 = convert_price(row[annex_amount_1])
+                        annexContractSigningDate1 = convert_date(row[annex_date_1], year)
                         annexes.append({
                             "totalValueOfAnnexContract1": totalValueOfAnnexContract1,
                             "annexContractSigningDate1": annexContractSigningDate1
                         })
-                        totalAmountOfAllAnnexContractsIncludingTaxes = convert_price(
-                            row[39])
-                        installmentPayDate1 = convert_date(row[40], year)
-                        installmentAmount1 = convert_price(row[41])
+                        # totalAmountOfAllAnnexContractsIncludingTaxes = convert_price(
+                        #     row[39])
+                        if filename == '2018.csv':
+                            totalValueOfAnnexContract2 = convert_price(row[annex_amount_2])
+                            annexContractSigningDate2 = convert_date(row[annex_date_2], year)
+                            annexes.append({
+                                "totalValueOfAnnexContract1": totalValueOfAnnexContract2,
+                                "annexContractSigningDate1": annexContractSigningDate2
+                            })
+                            totalValueOfAnnexContract3 = convert_price(row[annex_amount_3])
+                            annexContractSigningDate3 = convert_date(row[annex_date_3], year)
+                            annexes.append({
+                                "totalValueOfAnnexContract1": totalValueOfAnnexContract3,
+                                "annexContractSigningDate1": annexContractSigningDate3
+                            })
+                            totalValueOfAnnexContract4 = convert_price(row[annex_amount_4])
+                            annexContractSigningDate4 = convert_date(row[annex_date_4], year)
+                            annexes.append({
+                                "totalValueOfAnnexContract1": totalValueOfAnnexContract4,
+                                "annexContractSigningDate1": annexContractSigningDate4
+                            })
+                            
+                        installmentPayDate1 = convert_date(row[installment_date_1], year)
+                        installmentAmount1 = convert_price(row[installment_amount_1])
                         installments.append({
                             "installmentPayDate1": installmentPayDate1,
                             "installmentAmount1": installmentAmount1
                         })
-                        installmentPayDate2 = convert_date(row[42], year)
-                        installmentAmount2 = convert_price(row[43])
+                        installmentPayDate2 = convert_date(row[installment_date_2], year)
+                        installmentAmount2 = convert_price(row[installment_amount_2])
                         installments.append({
                             "installmentPayDate1": installmentPayDate2,
                             "installmentAmount1": installmentAmount2
                         })
-                        discountAmountFromContract = convert_price(row[44])
-                        lastInstallmentPayDate = convert_date(row[45], year)
-                        lastInstallmentAmount = convert_price(row[46])
-                        totalPayedPriceForContract = convert_price(row[47])
-                        directorates = row[48].strip()
-                        nameOfProcurementOffical = row[49]
-                        headquarters = row[50]
-                        flagStatus = row[51]
+                        if filename == '2018.csv':
+                            installmentPayDate3 = convert_date(row[installment_date_3], year)
+                            installmentAmount3 = convert_price(row[installment_amount_3])
+                            installments.append({
+                                "installmentPayDate1": installmentPayDate3,
+                                "installmentAmount1": installmentAmount3
+                            })
+                            installmentPayDate4 = convert_date(row[installment_date_4], year)
+                            installmentAmount4 = convert_price(row[installment_amount_4])
+                            installments.append({
+                                "installmentPayDate1": installmentPayDate4,
+                                "installmentAmount1": installmentAmount4
+                            })
+
+                        discountAmountFromContract = convert_price(row[deduction_amount])
+                        lastInstallmentPayDate = convert_date(row[last_installment_date], year)
+                        lastInstallmentAmount = convert_price(row[last_installment_amount])
+                        totalPayedPriceForContract = convert_price(row[total_payed_price])
+                        directorates = row[directorate].strip()
+                        nameOfProcurementOffical = row[name_of_procurement]
+                        headquarters = row[company_headquarters]
+                        flagStatus = row[flag_status]
 
                         report = {
                             "activityTitle": activity_title_of_procurement,
@@ -166,7 +264,7 @@ def parse():
                             "contract": {
                                 "predictedValue": predictedValue,
                                 "predictedValueSlug": mySlugify(predictedValue),
-                                "totalAmountOfAllAnnexContractsIncludingTaxes": totalAmountOfAllAnnexContractsIncludingTaxes,
+                                "totalAmountOfAllAnnexContractsIncludingTaxes": 0,
                                 "totalAmountOfContractsIncludingTaxes": totalAmountOfContractsIncludingTaxes,
                                 "totalAmountOfContractsIncludingTaxesSlug": mySlugify(totalAmountOfContractsIncludingTaxes),
                                 "totalPayedPriceForContract": totalPayedPriceForContract,
