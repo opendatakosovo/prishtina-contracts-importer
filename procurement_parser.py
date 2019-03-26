@@ -39,7 +39,7 @@ def parse():
                 installments = []
                 annexes = []
                 for row in reader:
-                    if line_number > 0 and filename != '2019.csv':
+                    if line_number > 0:
                         year = int(filename.replace('.csv', ''))
                         planned = convert_planned_number(row[0])
                         budget_type = convert_buget_type(row[1])
